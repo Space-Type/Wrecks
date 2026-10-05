@@ -16,14 +16,18 @@ project(raytracer VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)
 
 set(WRECKS_SOURCES
+    src/errors/Error/Error.cpp
+    src/errors/Error/Error.hpp
+    src/errors/NetworkError/NetworkError.cpp
+    src/errors/NetworkError/NetworkError.hpp
     src/networking/UDPSocket/UDPSocket.hpp
     src/networking/UDPSocket/UDPSocket.unix.cpp
     src/networking/UDPSocket/UDPSocket.win.cpp)
 
 if (WIN32)
-    set(EXPLUDED_PLATFORM "unix")
+    set(EXCLUDED_PLATFORM "unix")
 else()
-    set(EXPLUDED_PLATFORM "win")
+    set(EXCLUDED_PLATFORM "win")
 endif()
 
 list(FILTER WRECKS_SOURCES EXCLUDE REGEX "\\.${EXCLUDED_PLATFORM}\\.[ch]pp$")
