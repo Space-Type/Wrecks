@@ -9,6 +9,7 @@
 #include "UDPSocket.hpp"
 #include <wrecks/errors.hpp>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -81,6 +82,16 @@ void Wrecks::Networking::UDPSocket::close() noexcept
 bool Wrecks::Networking::UDPSocket::isOpen() const noexcept
 {
     return m_FD >= 0;
+}
+
+void Wrecks::Networking::UDPSocket::setNonBlocking(bool setting)
+{
+    int flags = ::fcntl(m_FD, F_GETFL, 0);
+
+    if (setting)
+        ::fcntl(m_FD, F_SETFL, flags | O_NONBLOCK);
+    else
+        ::fcntl(m_FD, F_SETFL, flags & ~O_NONBLOCK);
 }
 
 void Wrecks::Networking::UDPSocket::swap(UDPSocket& other) noexcept

@@ -43,6 +43,8 @@ namespace Wrecks::Networking {
             void close() noexcept;
             bool isOpen() const noexcept;
 
+            void setNonBlocking(bool setting = true);
+
             /**
              * Sends data to the destination
              * address. Returns true if all data
@@ -80,7 +82,7 @@ namespace Wrecks::Networking {
              * sensitive contexts.
              */
             template <typename T>
-            size_t receive(const T& data, cstring_view host, std::uint16_t port)
+            size_t receive(T& data, cstring_view host, std::uint16_t port)
             {
                 auto addr = constructAddress(host, port);
                 return receive(data, addr);
