@@ -2,7 +2,8 @@ name: Unit Tests (CMake/GTest)
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
