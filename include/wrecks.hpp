@@ -7,4 +7,6 @@
 
 #pragma once
 
+#include "wrecks/common.hpp"
+#include "wrecks/errors.hpp"
 #include "wrecks/networking.hpp"
