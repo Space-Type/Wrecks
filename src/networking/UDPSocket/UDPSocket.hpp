@@ -21,8 +21,7 @@
 
 namespace Wrecks::Networking {
     class UDPSocket {
-        cstring_view m_Hostname;
-        std::uint16_t m_Port;
+        sockaddr_in m_Address;
 
         #ifdef _WIN32
         #else
@@ -30,13 +29,20 @@ namespace Wrecks::Networking {
         #endif
 
         public:
-            UDPSocket(std::string_view host, std::uint16_t port);
+            UDPSocket(cstring_view host, std::uint16_t port);
             UDPSocket(const UDPSocket& cpy) = delete;
             UDPSocket(UDPSocket&& other) noexcept;
+            UDPSocket() noexcept;
             ~UDPSocket();
 
-            inline cstring_view host() const noexcept { return m_Hostname; }
-            inline std::uint16_t port() const noexcept { return m_Port; }
+            cstring_view host() const noexcept;
+            std::uint16_t port() const noexcept;
+
+            inline const sockaddr_in& address() const noexcept { return m_Address; }
+
+            void open(cstring_view host, std::uint16_t port);
+            void close() noexcept;
+            bool isOpen() const noexcept;
 
             /**
              * Simpler version of `send()`, which is
@@ -63,7 +69,7 @@ namespace Wrecks::Networking {
             inline void operator=(UDPSocket&& other) noexcept { swap(other); }
 
         private:
-            sockaddr_in constructAddress(cstring_view host, std::uint16_t port);
+            static sockaddr_in constructAddress(cstring_view host, std::uint16_t port);
             bool sendBytes(const char* data, std::size_t length, const sockaddr_in& dest) noexcept;
     };
 }
