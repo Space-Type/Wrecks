@@ -54,13 +54,16 @@ namespace Wrecks::Networking {
             bool send(const T& data, const sockaddr_in& dest) noexcept { return sendBytes(reinterpret_cast<const char*>(&data), sizeof(T), dest); }
 
             /**
-             * Receives data from the destination
-             * address. Returns the amount of bytes
+             * Receives data available on the socket.
+             * Returns the amount of bytes
              * that were received, or 0 otherwise.
+             * If the sender is a non-null pointer
+             * and the return value isn't 0, its
+             * value will be filled with the address
+             * of the packet's sender.
              */
             template <typename T>
-            size_t receive(T& data, const sockaddr_in& dest) noexcept { return receiveBytes(reinterpret_cast<char*>(&data), sizeof(T), dest); }
-
+            size_t receive(T& data, sockaddr_in* sender = nullptr) noexcept { return receiveBytes(reinterpret_cast<char*>(&data), sizeof(T), sender); }
 
             /**
              * Simpler version of `send()`, which is
@@ -75,26 +78,13 @@ namespace Wrecks::Networking {
                 return send(data, addr);
             }
 
-            /**
-             * Simpler version of `receive()`, which is
-             * easier to use, but incurs a performance
-             * cost. Should not be used in performance-
-             * sensitive contexts.
-             */
-            template <typename T>
-            size_t receive(T& data, cstring_view host, std::uint16_t port)
-            {
-                auto addr = constructAddress(host, port);
-                return receive(data, addr);
-            }
-
             void swap(UDPSocket& other) noexcept;
             inline void operator=(UDPSocket&& other) noexcept { swap(other); }
 
         private:
             static sockaddr_in constructAddress(cstring_view host, std::uint16_t port);
             bool sendBytes(const char* data, std::size_t length, const sockaddr_in& dest) noexcept;
-            size_t receiveBytes(char* data, std::size_t size, const sockaddr_in& dest) noexcept;
+            size_t receiveBytes(char* data, std::size_t size, sockaddr_in* dest) noexcept;
     };
 }
 
