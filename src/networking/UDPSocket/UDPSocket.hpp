@@ -24,6 +24,7 @@ namespace Wrecks::Networking {
         sockaddr_in m_Address;
 
         #ifdef _WIN32
+            SOCKET m_Socket;
         #else
             int m_FD;
         #endif
@@ -35,13 +36,14 @@ namespace Wrecks::Networking {
             UDPSocket() noexcept;
             ~UDPSocket();
 
-            cstring_view host() const noexcept;
-            std::uint16_t port() const noexcept;
-            inline const sockaddr_in& address() const noexcept { return m_Address; }
+
+            [[nodiscard]] cstring_view host() const noexcept;
+            [[nodiscard]] std::uint16_t port() const noexcept;
+            [[nodiscard]] inline const sockaddr_in& address() const noexcept { return m_Address; }
 
             void open(cstring_view host, std::uint16_t port);
             void close() noexcept;
-            bool isOpen() const noexcept;
+            [[nodiscard]] bool isOpen() const noexcept;
 
             void setNonBlocking(bool setting = true);
 
