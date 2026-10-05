@@ -37,12 +37,28 @@ namespace Wrecks::Networking {
 
             cstring_view host() const noexcept;
             std::uint16_t port() const noexcept;
-
             inline const sockaddr_in& address() const noexcept { return m_Address; }
 
             void open(cstring_view host, std::uint16_t port);
             void close() noexcept;
             bool isOpen() const noexcept;
+
+            /**
+             * Sends data to the destination
+             * address. Returns true if all data
+             * was sent, and false if not.
+             */
+            template <typename T>
+            bool send(const T& data, const sockaddr_in& dest) noexcept { return sendBytes(reinterpret_cast<const char*>(&data), sizeof(T), dest); }
+
+            /**
+             * Receives data from the destination
+             * address. Returns the amount of bytes
+             * that were received, or 0 otherwise.
+             */
+            template <typename T>
+            size_t receive(T& data, const sockaddr_in& dest) noexcept { return receiveBytes(reinterpret_cast<char*>(&data), sizeof(T), dest); }
+
 
             /**
              * Simpler version of `send()`, which is
@@ -58,12 +74,17 @@ namespace Wrecks::Networking {
             }
 
             /**
-             * Sends data to the destination
-             * address. Returns true if all data
-             * was sent, and false if not.
+             * Simpler version of `receive()`, which is
+             * easier to use, but incurs a performance
+             * cost. Should not be used in performance-
+             * sensitive contexts.
              */
             template <typename T>
-            bool send(const T& data, const sockaddr_in& dest) noexcept { return sendBytes(reinterpret_cast<const char*>(&data), sizeof(T), dest); }
+            size_t receive(const T& data, cstring_view host, std::uint16_t port)
+            {
+                auto addr = constructAddress(host, port);
+                return receive(data, addr);
+            }
 
             void swap(UDPSocket& other) noexcept;
             inline void operator=(UDPSocket&& other) noexcept { swap(other); }
@@ -71,6 +92,7 @@ namespace Wrecks::Networking {
         private:
             static sockaddr_in constructAddress(cstring_view host, std::uint16_t port);
             bool sendBytes(const char* data, std::size_t length, const sockaddr_in& dest) noexcept;
+            size_t receiveBytes(char* data, std::size_t size, const sockaddr_in& dest) noexcept;
     };
 }
 

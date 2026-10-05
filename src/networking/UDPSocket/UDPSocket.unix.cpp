@@ -112,5 +112,28 @@ bool Wrecks::Networking::UDPSocket::sendBytes(const char* data, std::size_t leng
         sizeof(sockaddr_in)
     );
 
+    if (bytesSent < 0)
+        close();
+
     return bytesSent >= 0 && bytesSent == length;
+}
+
+size_t Wrecks::Networking::UDPSocket::receiveBytes(char* data, std::size_t size, const sockaddr_in& dest) noexcept
+{
+    sockaddr_in addr = dest;
+    socklen_t addrLen = sizeof(sockaddr_in);
+
+    auto bytesReceived = ::recvfrom(
+        m_FD,
+        data, size,
+        0,
+        reinterpret_cast<sockaddr*>(&addr), &addrLen
+    );
+
+    if (bytesReceived < 0) {
+        close();
+        return 0;
+    }
+
+    return static_cast<size_t>(bytesReceived);
 }
