@@ -34,3 +34,11 @@ list(FILTER WRECKS_SOURCES EXCLUDE REGEX "\\.${EXCLUDED_PLATFORM}\\.[ch]pp$")
 
 add_library(wrecks STATIC ${WRECKS_SOURCES})
 target_include_directories(wrecks PUBLIC include)
+
+if (CMAKE_BUILD_TYPE STREQ "Debug")
+    target_compile_options(wrecks PRIVATE --coverage)
+    target_link_options(wrecks PRIVATE --coverage)
+endif()
+
+enable_testing()
+add_subdirectory(tests)
