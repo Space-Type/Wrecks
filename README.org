@@ -1,0 +1,6 @@
+#+title: Wrecks
+#+author: Bard-Gaming
+#+date: Mon Oct  5 14:12:48 2026
+
+Wrecks is a cross-platform ECS library written in C++23,
+as part of the R-Type project.
