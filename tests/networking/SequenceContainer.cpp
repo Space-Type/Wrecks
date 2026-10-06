@@ -79,3 +79,31 @@ TEST(networking_SequenceContainer, tickReplay)
 
     container.replayFrom(8952);
 }
+
+TEST(networking_SequenceContainer, futureTickReplay)
+{
+    constexpr int value = 42;
+    TestContainer<value> container;
+
+    container[8952] = value;
+    container[8953] = value;
+    container[8954] = value;
+    container[8955] = value;
+    container[8956] = value;
+
+    container.replayFrom(8957);
+}
+
+TEST(networking_SequenceContainer, tickReplayEdgeCase)
+{
+    constexpr int value = 42;
+    TestContainer<value> container;
+
+    container[SIZE_MAX - 2] = value;
+    container[SIZE_MAX - 1] = value;
+    container[SIZE_MAX - 0] = value;
+
+    // If replayFrom() is implement wrong,
+    // this will cause an infinite loop.
+    container.replayFrom(SIZE_MAX);
+}

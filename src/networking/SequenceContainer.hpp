@@ -14,7 +14,6 @@
 
 
 namespace Wrecks::Networking {
-
     /**
      * Sequence container class.
      *
@@ -60,8 +59,9 @@ namespace Wrecks::Networking {
                 if (tick > self.m_LastTick)
                     return;
 
-                for (Tick current = tick; tick < self.m_LastTick; tick++)
-                    self.replayTick(self[tick]);
+                for (Tick current = tick; current < self.m_LastTick; current++) {
+                    self.replayTick(self.get(current));
+                }
 
                 // Note: needs to be handled
                 // separately, as `self.m_LastTick`
@@ -69,7 +69,7 @@ namespace Wrecks::Networking {
                 // an infinite loop if the condition
                 // is `tick <= self.m_LastTick`, since
                 // `tick` would overflow to 0.
-                self.replayTick(self[self.m_LastTick]);
+                self.replayTick(self.get(self.m_LastTick));
             }
 
             /**
@@ -87,12 +87,7 @@ namespace Wrecks::Networking {
                 return m_Data[tick % s_Size];
             }
 
-            /**
-             * Retrieves the sequence element
-             * at the specified tick, no matter
-             * its value.
-             */
-            constexpr const Element& operator[](Tick tick) const noexcept { return m_Data[tick % s_Size]; }
+            inline constexpr const Element& get(Tick tick) const noexcept { return m_Data[tick % s_Size]; }
 
             [[nodiscard]] constexpr iterator begin() noexcept { return m_Data.begin(); }
             [[nodiscard]] constexpr iterator end() noexcept { return m_Data.end(); }
