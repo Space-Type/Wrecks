@@ -28,10 +28,13 @@ Wrecks::Networking::UDPSocket::UDPSocket() noexcept
     : m_Address{ 0 }
     , m_Socket(INVALID_SOCKET)
 {
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);  // FIXME: this works but it's bad
 }
 
 Wrecks::Networking::UDPSocket::~UDPSocket()
 {
+    WSACleanup();
     close();
 }
 
