@@ -17,7 +17,8 @@ FetchContent_Declare(googletest
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
-    networking/UDPSocket.common.cpp
+    networking/SequenceContainer.cpp
+    networking/UDPSocket.cpp
     networking/UDPSocket.unix.cpp
     networking/UDPSocket.win.cpp)
 
