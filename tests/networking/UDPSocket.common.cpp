@@ -39,8 +39,14 @@ TEST(networking_UDPSocket_common, CloseValidSocket)
 
 TEST(networking_UDPSocket_common, InvalidPort)
 {
-    // 0 is a valid port (=> uses first available port)
-    EXPECT_THROW(Wrecks::Networking::UDPSocket(VALID_HOST, 1), Wrecks::NetworkError);
+    // Since Windows does reserve ports in range [1; 1024], using
+    // a port in that range may work and thus fail the test. As such,
+    // we instead reserve a working port, and then try to create a
+    // socket on that same port.
+    constexpr std::uint16_t port = 27863;
+    Wrecks::Networking::UDPSocket blockerPort(VALID_HOST, port);  // block port for the test
+
+    EXPECT_THROW(Wrecks::Networking::UDPSocket(VALID_HOST, port), Wrecks::NetworkError);
 }
 
 TEST(networking_UDPSocket_common, InvalidHost)

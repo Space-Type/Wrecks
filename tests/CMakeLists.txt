@@ -18,7 +18,8 @@ FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
     networking/UDPSocket.common.cpp
-    networking/UDPSocket.unix.cpp)
+    networking/UDPSocket.unix.cpp
+    networking/UDPSocket.win.cpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")

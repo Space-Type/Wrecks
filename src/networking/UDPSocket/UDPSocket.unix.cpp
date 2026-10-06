@@ -9,6 +9,7 @@
 #include "UDPSocket.hpp"
 #include <wrecks/errors.hpp>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -83,6 +84,16 @@ bool Wrecks::Networking::UDPSocket::isOpen() const noexcept
     return m_FD >= 0;
 }
 
+void Wrecks::Networking::UDPSocket::setNonBlocking(bool setting)
+{
+    int flags = ::fcntl(m_FD, F_GETFL, 0);
+
+    if (setting)
+        ::fcntl(m_FD, F_SETFL, flags | O_NONBLOCK);
+    else
+        ::fcntl(m_FD, F_SETFL, flags & ~O_NONBLOCK);
+}
+
 void Wrecks::Networking::UDPSocket::swap(UDPSocket& other) noexcept
 {
     std::swap(m_Address, other.m_Address);
@@ -112,5 +123,28 @@ bool Wrecks::Networking::UDPSocket::sendBytes(const char* data, std::size_t leng
         sizeof(sockaddr_in)
     );
 
+    if (bytesSent < 0)
+        close();
+
     return bytesSent >= 0 && bytesSent == length;
+}
+
+size_t Wrecks::Networking::UDPSocket::receiveBytes(char* data, std::size_t size, sockaddr_in* dest) noexcept
+{
+    socklen_t addrLen = sizeof(sockaddr_in);
+
+    auto bytesReceived = ::recvfrom(
+        m_FD,
+        data, size,
+        0,
+        reinterpret_cast<sockaddr*>(dest),
+        dest ? &addrLen : nullptr
+    );
+
+    if (bytesReceived < 0) {
+        close();
+        return 0;
+    }
+
+    return static_cast<size_t>(bytesReceived);
 }
