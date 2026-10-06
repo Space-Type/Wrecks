@@ -10,3 +10,4 @@
 #pragma once
 
 #include "../../src/networking/UDPSocket/UDPSocket.hpp"
+#include "../../src/networking/SequenceContainer.hpp"
