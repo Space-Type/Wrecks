@@ -17,6 +17,10 @@ FetchContent_Declare(googletest
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
+    errors/Error.cpp
+    errors/NetworkError.cpp
+    events/BaseEventReceiver.cpp
+    events/EventManager.cpp
     networking/SequenceContainer.cpp
     networking/UDPSocket.cpp
     networking/UDPSocket.unix.cpp

@@ -20,6 +20,11 @@ set(WRECKS_SOURCES
     src/errors/Error/Error.hpp
     src/errors/NetworkError/NetworkError.cpp
     src/errors/NetworkError/NetworkError.hpp
+    src/events/EventManager/EventManager.cpp
+    src/events/EventManager/EventManager.hpp
+    src/events/BaseEventReceiver.hpp
+    src/events/Event.hpp
+    src/events/IEventReceiver.hpp
     src/networking/UDPSocket/UDPSocket.hpp
     src/networking/UDPSocket/UDPSocket.unix.cpp
     src/networking/UDPSocket/UDPSocket.win.cpp)
