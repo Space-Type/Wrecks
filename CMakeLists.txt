@@ -16,6 +16,9 @@ project(raytracer VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)
 
 set(WRECKS_SOURCES
+    src/ecs/Entity/Entity.cpp
+    src/ecs/Engine.hpp
+    src/ecs/System.hpp
     src/errors/Error/Error.cpp
     src/errors/Error/Error.hpp
     src/errors/NetworkError/NetworkError.cpp
