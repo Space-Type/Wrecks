@@ -17,6 +17,7 @@ FetchContent_Declare(googletest
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
+    ecs/Engine.cpp
     errors/Error.cpp
     errors/NetworkError.cpp
     events/BaseEventReceiver.cpp
