@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "../../src/ecs/Component.hpp"
+#include "../../src/ecs/ComponentContainer.hpp"
 #include "../../src/ecs/Entity.hpp"
 #include "../../src/ecs/Engine.hpp"
 #include "../../src/ecs/System.hpp"
