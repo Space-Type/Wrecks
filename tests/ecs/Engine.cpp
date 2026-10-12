@@ -6,7 +6,6 @@
 ** Engine class
 */
 
-#include "wrecks/common.hpp"
 #include <gtest/gtest.h>
 #include <wrecks.hpp>
 
