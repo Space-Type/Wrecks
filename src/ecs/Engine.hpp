@@ -32,13 +32,7 @@ namespace Wrecks::ECS {
             {
                 std::apply([&](auto& system){
                     Signature signature = system.signature();
-
-                    for (auto& entity : m_Entities) {
-                        if ((entity.signature & signature) != signature)
-                            continue;
-
-                        system();  // TODO: add entity and component manager as param
-                    }
+                    system();
                 }, m_Systems);
             }
     };
