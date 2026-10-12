@@ -6,12 +6,15 @@
 ** Engine class
 */
 
+#include "wrecks/common.hpp"
 #include <gtest/gtest.h>
 #include <wrecks.hpp>
 
 
 struct TestSystem {
     bool wasInvoked = false;
+
+    constexpr Wrecks::Signature signature() const noexcept { return Wrecks::Signature(0b1); }
 
     void operator()()
     {

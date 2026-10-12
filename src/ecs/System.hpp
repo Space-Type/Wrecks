@@ -8,15 +8,18 @@
 
 #pragma once
 
+#include <type_traits>
+#include <wrecks/common.hpp>
 #include <tuple>
 
 
 namespace Wrecks::ECS {
     template <typename T>
-    concept System = requires (T& system)
+    concept System = requires (T& mutSystem, const T& cnstSystem)
     {
-        { system() };
-    };
+        { cnstSystem.signature() } -> std::same_as<Signature>;
+        { mutSystem() };
+    } && std::is_nothrow_default_constructible_v<T>;
 
     template <typename T>
     struct is_system_tuple {
