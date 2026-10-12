@@ -8,9 +8,14 @@
 
 #pragma once
 
+#include <type_traits>
+#include <wrecks/common.hpp>
+
+
 namespace Wrecks::ECS {
-    class Entity {
-        public:
-            Entity();
+    struct Entity {
+        using ID = std::uint32_t;
+
+        ID id;
     };
 }
