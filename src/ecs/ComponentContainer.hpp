@@ -13,18 +13,26 @@
 #include <unordered_map>
 #include <cassert>
 #include <vector>
+#include <iostream>
 
 
 namespace Wrecks::ECS {
     template <Component T>
     class ComponentContainer {
+        private:
+            template <typename I>
+                requires (std::is_same_v<I, typename std::vector<T>::iterator> || std::is_same_v<I, typename std::vector<T>::const_iterator>)
+            class ComponentIterator;
+
         public:
             using ComponentType = T;
+            using iterator = ComponentIterator<typename std::vector<ComponentType>::iterator>;
+            using const_iterator = ComponentIterator<typename std::vector<ComponentType>::const_iterator>;
 
         private:
             std::vector<ComponentType> m_Data;
             std::unordered_map<Entity::ID, std::size_t> m_EntityToIndex;
-            std::unordered_map<Entity::ID, std::size_t> m_IndexToEntity;
+            std::unordered_map<std::size_t, Entity::ID> m_IndexToEntity;
 
         public:
             ComponentContainer() noexcept
@@ -77,6 +85,9 @@ namespace Wrecks::ECS {
                     setIndex(lastEntity, index);
                 }
 
+                m_EntityToIndex.erase(entity.id);
+                m_IndexToEntity.erase(lastIndex);
+
                 m_Data.pop_back();
             }
 
@@ -92,11 +103,86 @@ namespace Wrecks::ECS {
                 return m_Data[m_EntityToIndex.at(id)];
             }
 
+            [[nodiscard]] constexpr iterator begin() noexcept { return iterator(m_Data.begin(), 0, m_IndexToEntity); }
+            [[nodiscard]] constexpr iterator end()   noexcept { return iterator(m_Data.end(), m_Data.size(), m_IndexToEntity); }
+
+            [[nodiscard]] constexpr const_iterator begin() const noexcept { return const_iterator(m_Data.begin(), 0, m_IndexToEntity); }
+            [[nodiscard]] constexpr const_iterator end()   const noexcept { return const_iterator(m_Data.end(), m_Data.size(), m_IndexToEntity); }
+
+            [[nodiscard]] constexpr const_iterator cbegin() const noexcept { return begin(); }
+            [[nodiscard]] constexpr const_iterator cend()   const noexcept { return end(); }
+
         private:
             inline void setIndex(Entity::ID id, std::size_t index)
             {
                 m_EntityToIndex[id] = index;
                 m_IndexToEntity[index] = id;
             }
+
+        private:
+            template <typename I>
+                requires (std::is_same_v<I, typename std::vector<ComponentType>::iterator> || std::is_same_v<I, typename std::vector<ComponentType>::const_iterator>)
+            class ComponentIterator {
+                using BaseIterator = I;
+
+                BaseIterator m_BaseIterator;
+                std::size_t m_Index;
+                const std::unordered_map<std::size_t, Entity::ID>& m_IndexToEntity;
+
+                public:
+                    constexpr ComponentIterator(BaseIterator base, std::size_t index, const std::unordered_map<std::size_t, Entity::ID>& indexMap) noexcept
+                        : m_BaseIterator(base)
+                        , m_Index(index)
+                        , m_IndexToEntity(indexMap)
+                    {
+                    }
+
+                    constexpr std::pair<Entity::ID, ComponentType&> operator*() noexcept
+                        requires (std::is_same_v<I, typename std::vector<ComponentType>::iterator>)  // only for non-const
+                    {
+                        std::cout << m_Index << std::endl;
+                        assert(m_IndexToEntity.find(m_Index) != m_IndexToEntity.end());
+                        return { m_IndexToEntity.at(m_Index), *m_BaseIterator };
+                    }
+
+                    constexpr std::pair<Entity::ID, const ComponentType&> operator*() const noexcept
+                    {
+                        assert(m_IndexToEntity.find(m_Index) != m_IndexToEntity.end());
+                        return { m_IndexToEntity.at(m_Index), *m_BaseIterator };
+                    }
+
+                    constexpr ComponentIterator& operator++() noexcept
+                    {
+                        ++m_BaseIterator;
+                        ++m_Index;
+                        return *this;
+                    }
+
+                    constexpr ComponentIterator operator++(int) noexcept
+                    {
+                        auto cpy = *this;
+                        ++(*this);
+                        return cpy;
+                    }
+
+                    constexpr ComponentIterator& operator--() noexcept
+                    {
+                        assert(m_Index != 0);
+
+                        --m_BaseIterator;
+                        --m_Index;
+                        return *this;
+                    }
+
+                    constexpr ComponentIterator& operator--(int) noexcept
+                    {
+                        auto cpy = *this;
+                        --(*this);
+                        return cpy;
+                    }
+
+                    constexpr bool operator==(const ComponentIterator& other) const noexcept { return m_BaseIterator == other.m_BaseIterator; }
+                    constexpr bool operator!=(const ComponentIterator& other) const noexcept { return m_BaseIterator != other.m_BaseIterator; }
+            };
     };
 }
