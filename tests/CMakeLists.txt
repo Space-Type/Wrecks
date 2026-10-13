@@ -19,7 +19,6 @@ FetchContent_MakeAvailable(googletest)
 set(TEST_SOURCES
     ecs/ComponentContainer.cpp
     ecs/Engine.cpp
-    ecs/Entity.cpp
     errors/Error.cpp
     errors/NetworkError.cpp
     events/BaseEventReceiver.cpp

@@ -31,8 +31,8 @@ namespace Wrecks::ECS {
 
         private:
             std::vector<ComponentType> m_Data;
-            std::unordered_map<Entity::ID, std::size_t> m_EntityToIndex;
-            std::unordered_map<std::size_t, Entity::ID> m_IndexToEntity;
+            std::unordered_map<Entity, std::size_t> m_EntityToIndex;
+            std::unordered_map<std::size_t, Entity> m_IndexToEntity;
 
         public:
             ComponentContainer() noexcept
@@ -57,9 +57,9 @@ namespace Wrecks::ECS {
              */
             void insert(Entity entity, ComponentType&& data)
             {
-                assert(m_EntityToIndex.find(entity.id) == m_EntityToIndex.end());
+                assert(m_EntityToIndex.find(entity) == m_EntityToIndex.end());
 
-                setIndex(entity.id, m_Data.size());
+                setIndex(entity, m_Data.size());
                 m_Data.push_back(std::move(data));
             }
 
@@ -73,9 +73,9 @@ namespace Wrecks::ECS {
             void remove(Entity entity) noexcept
             {
                 assert(!m_Data.empty());
-                assert(m_EntityToIndex.find(entity.id) != m_EntityToIndex.end());
+                assert(m_EntityToIndex.find(entity) != m_EntityToIndex.end());
 
-                auto index = m_EntityToIndex.at(entity.id);
+                auto index = m_EntityToIndex.at(entity);
                 auto lastIndex = m_Data.size() - 1;
 
                 if (index != lastIndex) {
@@ -85,22 +85,22 @@ namespace Wrecks::ECS {
                     setIndex(lastEntity, index);
                 }
 
-                m_EntityToIndex.erase(entity.id);
+                m_EntityToIndex.erase(entity);
                 m_IndexToEntity.erase(lastIndex);
 
                 m_Data.pop_back();
             }
 
-            [[nodiscard]] const ComponentType& operator[](Entity::ID id) const noexcept
+            [[nodiscard]] const ComponentType& operator[](Entity entity) const noexcept
             {
-                assert(m_EntityToIndex.find(id) != m_EntityToIndex.cend());
-                return m_Data[m_EntityToIndex.at(id)];
+                assert(m_EntityToIndex.find(entity) != m_EntityToIndex.cend());
+                return m_Data[m_EntityToIndex.at(entity)];
             }
 
-            [[nodiscard]] ComponentType& operator[](Entity::ID id) noexcept
+            [[nodiscard]] ComponentType& operator[](Entity entity) noexcept
             {
-                assert(m_EntityToIndex.find(id) != m_EntityToIndex.end());
-                return m_Data[m_EntityToIndex.at(id)];
+                assert(m_EntityToIndex.find(entity) != m_EntityToIndex.end());
+                return m_Data[m_EntityToIndex.at(entity)];
             }
 
             [[nodiscard]] constexpr iterator begin() noexcept { return iterator(m_Data.begin(), 0, m_IndexToEntity); }
@@ -113,7 +113,7 @@ namespace Wrecks::ECS {
             [[nodiscard]] constexpr const_iterator cend()   const noexcept { return end(); }
 
         private:
-            inline void setIndex(Entity::ID id, std::size_t index)
+            inline void setIndex(Entity id, std::size_t index)
             {
                 m_EntityToIndex[id] = index;
                 m_IndexToEntity[index] = id;
@@ -127,17 +127,17 @@ namespace Wrecks::ECS {
 
                 BaseIterator m_BaseIterator;
                 std::size_t m_Index;
-                const std::unordered_map<std::size_t, Entity::ID>& m_IndexToEntity;
+                const std::unordered_map<std::size_t, Entity>& m_IndexToEntity;
 
                 public:
-                    constexpr ComponentIterator(BaseIterator base, std::size_t index, const std::unordered_map<std::size_t, Entity::ID>& indexMap) noexcept
+                    constexpr ComponentIterator(BaseIterator base, std::size_t index, const std::unordered_map<std::size_t, Entity>& indexMap) noexcept
                         : m_BaseIterator(base)
                         , m_Index(index)
                         , m_IndexToEntity(indexMap)
                     {
                     }
 
-                    constexpr std::pair<Entity::ID, ComponentType&> operator*() noexcept
+                    constexpr std::pair<Entity, ComponentType&> operator*() noexcept
                         requires (std::is_same_v<I, typename std::vector<ComponentType>::iterator>)  // only for non-const
                     {
                         std::cout << m_Index << std::endl;
@@ -145,7 +145,7 @@ namespace Wrecks::ECS {
                         return { m_IndexToEntity.at(m_Index), *m_BaseIterator };
                     }
 
-                    constexpr std::pair<Entity::ID, const ComponentType&> operator*() const noexcept
+                    constexpr std::pair<Entity, const ComponentType&> operator*() const noexcept
                     {
                         assert(m_IndexToEntity.find(m_Index) != m_IndexToEntity.end());
                         return { m_IndexToEntity.at(m_Index), *m_BaseIterator };

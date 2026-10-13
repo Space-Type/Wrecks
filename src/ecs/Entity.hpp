@@ -8,14 +8,9 @@
 
 #pragma once
 
-#include <type_traits>
 #include <wrecks/common.hpp>
 
 
 namespace Wrecks::ECS {
-    struct Entity {
-        using ID = std::uint32_t;
-
-        ID id;
-    };
+    using Entity = std::uint32_t;
 }
