@@ -32,7 +32,8 @@ set(WRECKS_SOURCES
     src/events/IEventReceiver.hpp
     src/networking/UDPSocket/UDPSocket.hpp
     src/networking/UDPSocket/UDPSocket.unix.cpp
-    src/networking/UDPSocket/UDPSocket.win.cpp)
+    src/networking/UDPSocket/UDPSocket.win.cpp
+    src/utils/IndexIterator.hpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")
