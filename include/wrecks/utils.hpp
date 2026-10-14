@@ -8,4 +8,5 @@
 
 #pragma once
 
+#include "../../src/utils/ContainsType.hpp"
 #include "../../src/utils/IndexIterator.hpp"
