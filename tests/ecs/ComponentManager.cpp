@@ -43,6 +43,14 @@ TEST(ecs_ComponentManager, getComponents)
     }
 }
 
+TEST(ecs_ComponentManager, getComponentIndex)
+{
+    ComponentManager manager;
+
+    EXPECT_EQ(manager.index<TestComponentA>(), 0);
+    EXPECT_EQ(manager.index<TestComponentB>(), 1);
+}
+
 TEST(ecs_ComponentManager, mutableForEach)
 {
     ComponentManager manager;
