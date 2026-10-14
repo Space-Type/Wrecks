@@ -16,6 +16,8 @@ project(raytracer VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)
 
 set(WRECKS_SOURCES
+    src/ecs/EntityContainer/EntityContainer.cpp
+    src/ecs/EntityContainer/EntityContainer.hpp
     src/ecs/Component.hpp
     src/ecs/ComponentContainer.hpp
     src/ecs/Engine.hpp
