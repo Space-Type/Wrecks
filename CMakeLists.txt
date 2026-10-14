@@ -20,6 +20,7 @@ set(WRECKS_SOURCES
     src/ecs/EntityContainer/EntityContainer.hpp
     src/ecs/Component.hpp
     src/ecs/ComponentContainer.hpp
+    src/ecs/ComponentManager.hpp
     src/ecs/Engine.hpp
     src/ecs/Entity.hpp
     src/ecs/System.hpp

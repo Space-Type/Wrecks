@@ -18,6 +18,7 @@ FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
     ecs/ComponentContainer.cpp
+    ecs/ComponentManager.cpp
     ecs/Engine.cpp
     ecs/EntityContainer.cpp
     errors/Error.cpp
