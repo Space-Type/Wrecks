@@ -37,5 +37,25 @@ namespace Wrecks::ECS {
                     (fnc(types), ...);
                 }, m_ComponentTypes);
             }
+
+            template <typename Fn>
+            inline decltype(auto) forEach(Fn&& fnc) const noexcept
+            {
+                return std::apply([fnc = std::move(fnc)](auto& ...types){
+                    (fnc(types), ...);
+                }, m_ComponentTypes);
+            }
     };
+
+    template <typename T>
+    struct is_component_manager : std::false_type {};
+
+    template <Component ...T>
+    struct is_component_manager<ComponentManager<T...>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_component_manager_v = is_component_manager<T>::value;
+
+    template <typename T>
+    concept ComponentManagerType = is_component_manager_v<T>;
 }
