@@ -10,3 +10,4 @@
 
 #include "../../src/utils/ContainsType.hpp"
 #include "../../src/utils/IndexIterator.hpp"
+#include "../../src/utils/TupleIndex.hpp"
