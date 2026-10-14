@@ -24,14 +24,10 @@ namespace Wrecks::ECS {
         };
 
     template <typename T>
-    struct is_system_tuple {
-        static constexpr bool value = false;
-    };
+    struct is_system_tuple : std::false_type {};
 
     template <System ...S>
-    struct is_system_tuple<std::tuple<S...>> {
-        static constexpr bool value = true;
-    };
+    struct is_system_tuple<std::tuple<S...>> : std::true_type {};
 
     template <typename T>
     inline constexpr bool is_system_tuple_v = is_system_tuple<T>::value;
