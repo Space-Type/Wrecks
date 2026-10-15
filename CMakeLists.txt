@@ -8,10 +8,10 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-project(raytracer VERSION 1.0
-                  DESCRIPTION "Wrecks library - R-Type project"
-                  HOMEPAGE_URL "https://github.com/Space-Type/Wrecks"
-                  LANGUAGES CXX)
+project(Wrecks-Library VERSION 1.0
+                       DESCRIPTION "Wrecks library - R-Type project"
+                       HOMEPAGE_URL "https://github.com/Space-Type/Wrecks"
+                       LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
