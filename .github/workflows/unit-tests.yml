@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        build_type: DebugTests
+        include:
+          - build_type: DebugTests
 
     runs-on: ${{ matrix.os }}
 
