@@ -1,0 +1,79 @@
+/*
+** EPITECH PROJECT, 2026
+** Project - Wrecks
+** File description:
+** Header file for
+** ComponentManager class
+*/
+
+#pragma once
+
+#include "ComponentContainer.hpp"
+#include "Component.hpp"
+#include <wrecks/utils.hpp>
+#include <tuple>
+
+
+namespace Wrecks::ECS {
+    template <Component ...T>
+    class ComponentManager {
+        using ComponentMap = std::tuple<ComponentContainer<T>...>;
+
+        ComponentMap m_ComponentTypes;
+
+        public:
+            ComponentManager() noexcept
+                : m_ComponentTypes()
+            {
+            }
+
+            template <Utils::ContainsType<T...> C>
+            constexpr ComponentContainer<C>& get() noexcept { return std::get<ComponentContainer<C>>(m_ComponentTypes); }
+
+            template <Utils::ContainsType<T...> C>
+            constexpr const ComponentContainer<C>& get() const noexcept { return std::get<ComponentContainer<C>>(m_ComponentTypes); }
+
+            template <Utils::ContainsType<T...> C>
+            static constexpr std::size_t index() noexcept { return Utils::tuple_index_v<ComponentContainer<C>, ComponentMap>; }
+
+            template <typename Fn>
+            inline decltype(auto) forEach(Fn&& fnc) noexcept
+            {
+                return std::apply([fnc = std::move(fnc)](auto& ...types){
+                    (fnc(types), ...);
+                }, m_ComponentTypes);
+            }
+
+            template <typename Fn>
+            inline decltype(auto) forEach(Fn&& fnc) const noexcept
+            {
+                return std::apply([fnc = std::move(fnc)](auto& ...types){
+                    (fnc(types), ...);
+                }, m_ComponentTypes);
+            }
+    };
+
+    template <typename T>
+    struct is_component_manager : std::false_type {};
+
+    template <Component ...T>
+    struct is_component_manager<ComponentManager<T...>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_component_manager_v = is_component_manager<T>::value;
+
+    template <typename T>
+    concept ComponentManagerType = is_component_manager_v<T>;
+
+    template <typename T, typename Manager>
+    struct is_managed_component : std::false_type {};
+
+    template <typename T, Component ...Elements>
+    struct is_managed_component<T, ComponentManager<Elements...>> : Utils::contains_type<T, Elements...> {};
+
+    template <typename T, typename Manager>
+    inline constexpr bool is_managed_component_v = is_managed_component<T, Manager>::value;
+
+    template <typename T, typename Manager>
+    concept ManagedComponent = is_managed_component_v<T, Manager>;
+}

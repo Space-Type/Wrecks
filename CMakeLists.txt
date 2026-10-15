@@ -16,6 +16,14 @@ project(raytracer VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)
 
 set(WRECKS_SOURCES
+    src/ecs/EntityContainer/EntityContainer.cpp
+    src/ecs/EntityContainer/EntityContainer.hpp
+    src/ecs/Component.hpp
+    src/ecs/ComponentContainer.hpp
+    src/ecs/ComponentManager.hpp
+    src/ecs/Engine.hpp
+    src/ecs/Entity.hpp
+    src/ecs/System.hpp
     src/errors/Error/Error.cpp
     src/errors/Error/Error.hpp
     src/errors/NetworkError/NetworkError.cpp
@@ -27,7 +35,11 @@ set(WRECKS_SOURCES
     src/events/IEventReceiver.hpp
     src/networking/UDPSocket/UDPSocket.hpp
     src/networking/UDPSocket/UDPSocket.unix.cpp
-    src/networking/UDPSocket/UDPSocket.win.cpp)
+    src/networking/UDPSocket/UDPSocket.win.cpp
+    src/utils/ContainsType.hpp
+    src/utils/FilteredIterator.hpp
+    src/utils/IndexIterator.hpp
+    src/utils/TupleIndex.hpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")

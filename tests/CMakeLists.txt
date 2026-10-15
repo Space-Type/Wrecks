@@ -17,6 +17,10 @@ FetchContent_Declare(googletest
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
+    ecs/ComponentContainer.cpp
+    ecs/ComponentManager.cpp
+    ecs/Engine.cpp
+    ecs/EntityContainer.cpp
     errors/Error.cpp
     errors/NetworkError.cpp
     events/BaseEventReceiver.cpp
@@ -24,7 +28,9 @@ set(TEST_SOURCES
     networking/SequenceContainer.cpp
     networking/UDPSocket.cpp
     networking/UDPSocket.unix.cpp
-    networking/UDPSocket.win.cpp)
+    networking/UDPSocket.win.cpp
+    utils/FilteredIterator.cpp
+    utils/IndexIterator.cpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")
