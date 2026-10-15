@@ -60,7 +60,7 @@ void Wrecks::ECS::EntityContainer::remove(Entity entity)
 void Wrecks::ECS::EntityContainer::addSignature(Entity entity, unsigned int bitPosition) noexcept
 {
     assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
-    m_Signatures[entity][bitPosition] = 1;
+    m_Signatures[entity].set(bitPosition);
 }
 
 /**
@@ -71,7 +71,7 @@ void Wrecks::ECS::EntityContainer::addSignature(Entity entity, unsigned int bitP
 void Wrecks::ECS::EntityContainer::removeSignature(Entity entity, unsigned int bitPosition) noexcept
 {
     assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
-    m_Signatures[entity][bitPosition] = 0;
+    m_Signatures[entity].reset(bitPosition);
 }
 
 /**
