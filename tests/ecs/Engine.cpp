@@ -13,12 +13,15 @@
 struct TestComponentA { int a; };
 struct TestComponentB {};
 
+struct TestSystem;
+
 struct TestSystem {
     bool wasInvoked = false;
 
     constexpr Wrecks::Signature signature() const noexcept { return 0b11; }
+    void setEngine(void*) const noexcept {}
 
-    void operator()()
+    void operator()(Wrecks::ECS::Entity entity)
     {
         wasInvoked = true;
     }

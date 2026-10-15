@@ -47,17 +47,18 @@ TEST(ecs_ComponentData, removeSoleEntity)
 TEST(ecs_ComponentData, removeEntity)
 {
     Wrecks::ECS::ComponentContainer<TestComponent> data;
-    Wrecks::ECS::Entity entity = 0;
-    Wrecks::ECS::Entity entityToRemove = 1;
+    Wrecks::ECS::Entity entity = 1;
 
-    data.insert(entityToRemove, { .value = 52 });
-    data.insert(entity, { .value = 32 });
-    ASSERT_EQ(data.size(), 2);
+    data.insert(2, { .value = 87 });
+    data.insert(entity, { .value = 52 });
+    data.insert(0, { .value = 32 });
+    ASSERT_EQ(data.size(), 3);
 
-    data.remove(entityToRemove);
-    EXPECT_EQ(data.size(), 1);
+    data.remove(entity);
+    EXPECT_EQ(data.size(), 2);
 
-    EXPECT_EQ(data[entity].value, 32);
+    EXPECT_EQ(data[0].value, 32);
+    EXPECT_EQ(data[2].value, 87);
 }
 
 TEST(ecs_ComponentData, removeAndAddBack)

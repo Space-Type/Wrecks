@@ -80,8 +80,11 @@ namespace Wrecks::ECS {
 
             void update()
             {
-                forEachSystem([](auto& system){
-                    system();
+                forEachSystem([&](auto& system){
+                    system.setEngine(this);
+                    for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
+                        system(entity);
+                    }
                 });
             }
 
@@ -93,10 +96,5 @@ namespace Wrecks::ECS {
                     (fnc(systemType), ...);
                 }, m_Systems);
             }
-    };
-
-    struct SystemA {
-        Signature signature() const noexcept { return 0b111111; }
-        void operator()() {}
     };
 }

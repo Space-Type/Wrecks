@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "Entity.hpp"
 #include <wrecks/common.hpp>
 #include <type_traits>
 #include <tuple>
@@ -17,10 +18,11 @@ namespace Wrecks::ECS {
     template <typename T>
     concept System =
         std::is_nothrow_default_constructible_v<T> &&
-        requires (T& mutSystem, const T& cnstSystem)
+        requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine)
         {
             { cnstSystem.signature() } -> std::same_as<Signature>;
-            { mutSystem() };
+            { mutSystem.setEngine(engine) };
+            { mutSystem(entity) };
         };
 
     template <typename T>
