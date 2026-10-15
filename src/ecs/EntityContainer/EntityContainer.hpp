@@ -11,6 +11,7 @@
 #include "../Entity.hpp"
 #include <wrecks/common.hpp>
 #include <wrecks/utils.hpp>
+#include <functional>
 #include <vector>
 
 
@@ -25,6 +26,10 @@ namespace Wrecks::ECS {
          */
         std::vector<Signature> m_Signatures;
         std::vector<Entity> m_NextID;
+
+        private:
+            template <typename Iterable>
+            class FilteredContainerView;
 
         public:
             using iterator = Utils::IndexIterator<typename std::vector<Signature>::iterator>;
@@ -45,6 +50,9 @@ namespace Wrecks::ECS {
             [[nodiscard]] Signature getSignature(Entity entity) const noexcept;
             [[nodiscard]] bool hasSignature(Entity entity, Signature sig) const noexcept;
 
+            inline FilteredContainerView<EntityContainer> filter(Signature signature) noexcept { return { signature, *this }; }
+            inline FilteredContainerView<const EntityContainer> filter(Signature signature) const noexcept { return { signature, *this }; }
+
             inline iterator begin() noexcept { return iterator(m_Signatures.begin(), 0); }
             inline iterator end()   noexcept { return iterator(m_Signatures.end(), m_Signatures.size()); }
 
@@ -53,5 +61,34 @@ namespace Wrecks::ECS {
 
             inline const_iterator cbegin() const noexcept { return begin(); }
             inline const_iterator cend()   const noexcept { return end(); }
+
+        private:
+            template <typename Iterable>
+            class FilteredContainerView {
+                Iterable& m_Container;
+                std::function<bool(std::pair<Entity, const Signature&>)> m_SignatureFilter;
+
+                public:
+                    using iterator = Utils::FilteredIterator<decltype(m_Container.begin()), decltype(m_SignatureFilter)>;
+                    using const_iterator = Utils::FilteredIterator<decltype(m_Container.cbegin()), decltype(m_SignatureFilter)>;
+
+                public:
+                    FilteredContainerView(Signature sig, Iterable& container) noexcept
+                        : m_Container(container)
+                        , m_SignatureFilter([sig](std::pair<Entity, const Signature&> data) noexcept {
+                            return (sig & data.second) == sig;
+                        })
+                    {
+                    }
+
+                    inline iterator begin() noexcept requires (!std::is_const_v<Iterable>) { return iterator(m_Container.begin(), m_Container.end(), m_SignatureFilter); }
+                    inline iterator end()   noexcept requires (!std::is_const_v<Iterable>) { return iterator(m_Container.end(), m_Container.end(), m_SignatureFilter); }
+
+                    inline const_iterator begin() noexcept { return const_iterator(m_Container.begin(), m_Container.end(), m_SignatureFilter); }
+                    inline const_iterator end()   noexcept { return const_iterator(m_Container.end(), m_Container.end(), m_SignatureFilter); }
+
+                    inline const_iterator cbegin() noexcept { return const_iterator(m_Container.begin(), m_Container.end(), m_SignatureFilter); }
+                    inline const_iterator cend()   noexcept { return const_iterator(m_Container.end(), m_Container.end(), m_SignatureFilter); }
+            };
     };
 }

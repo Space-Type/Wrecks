@@ -95,3 +95,24 @@ TEST(ecs_EntityContainer, constIterator)
         EXPECT_TRUE(entity == entity1 || entity == entity2 || entity == entity3);
     }
 }
+
+TEST(ecs_EntityContainer, constEntityFilter)
+{
+    Wrecks::ECS::EntityContainer entities;
+    auto entity1 = entities.create();
+    auto entity2 = entities.create();
+    auto entity3 = entities.create();
+    auto entity4 = entities.create();
+    auto entity5 = entities.create();
+
+    entities.setSignature(entity1, 0b101);
+    entities.addSignature(entity2, 0b001);
+    entities.addSignature(entity3, 0b100);
+    entities.addSignature(entity4, 0b000);
+    entities.addSignature(entity5, 0b111);
+
+    for (auto [entity, signature] : entities.filter(0b101)) {
+        EXPECT_EQ(signature & Wrecks::Signature(0b101), 0b101);
+        EXPECT_TRUE(entity == entity1 || entity == entity5);
+    }
+}
