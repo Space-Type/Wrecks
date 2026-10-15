@@ -12,6 +12,20 @@
 #include <wrecks.hpp>
 
 
+TEST(ecs_EntityContainer, addSignature)
+{
+    Wrecks::ECS::EntityContainer entities;
+    auto entity = entities.create();
+
+    entities.addSignature(entity, 2);
+    entities.addSignature(entity, 0);
+    EXPECT_EQ(entities.getSignature(entity), 0b101);
+
+    entities.removeSignature(entity, 2);
+    entities.addSignature(entity, 3);
+    EXPECT_EQ(entities.getSignature(entity), 0b1001);
+}
+
 TEST(ecs_EntityContainer, completeEntityCreation)
 {
     Wrecks::ECS::EntityContainer entities;
@@ -26,7 +40,7 @@ TEST(ecs_EntityContainer, completeEntityCreation)
         EXPECT_EQ(signature, Wrecks::Signature());
         EXPECT_TRUE(entity == entity1 || entity == entity2 || entity == entity3);
 
-        entities.updateSignature(entity, 0b1101);
+        entities.setSignature(entity, 0b1101);
     }
 
     EXPECT_EQ(entities.getSignature(entity1), 0b1101);

@@ -53,11 +53,33 @@ void Wrecks::ECS::EntityContainer::remove(Entity entity)
 }
 
 /**
+ * Sets the bit at the specified
+ * bit position to 1, essentially
+ * adding a component to the entity.
+ */
+void Wrecks::ECS::EntityContainer::addSignature(Entity entity, unsigned int bitPosition) noexcept
+{
+    assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
+    m_Signatures[entity][bitPosition] = 1;
+}
+
+/**
+ * Sets the bit at the specified
+ * bit position to 0, essentially
+ * removing a component to the entity.
+ */
+void Wrecks::ECS::EntityContainer::removeSignature(Entity entity, unsigned int bitPosition) noexcept
+{
+    assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
+    m_Signatures[entity][bitPosition] = 0;
+}
+
+/**
  * Changes the signature of the
  * specified entity to the one
  * specified as parameter.
  */
-void Wrecks::ECS::EntityContainer::updateSignature(Entity entity, Signature newSignature) noexcept
+void Wrecks::ECS::EntityContainer::setSignature(Entity entity, Signature newSignature) noexcept
 {
     assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
     m_Signatures[entity] = newSignature;

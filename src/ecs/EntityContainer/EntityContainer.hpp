@@ -38,7 +38,10 @@ namespace Wrecks::ECS {
             Entity create();
             void remove(Entity entity);
 
-            void updateSignature(Entity entity, Signature newSignature) noexcept;
+            void addSignature(Entity entity, unsigned int bitPosition) noexcept;
+            void removeSignature(Entity entity, unsigned int bitPosition) noexcept;
+
+            void setSignature(Entity entity, Signature newSignature) noexcept;
             Signature getSignature(Entity entity) const noexcept;
 
             inline iterator begin() noexcept { return iterator(m_Signatures.begin(), 0); }
