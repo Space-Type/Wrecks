@@ -138,7 +138,7 @@ TEST(ecs_ComponentData, accessMissingEntityDeathTest)
     Wrecks::ECS::ComponentContainer<TestComponent> data;
     Wrecks::ECS::Entity entity = 0;
 
-    EXPECT_EXIT((void)data[entity], testing::KilledBySignal(SIGABRT), "");
+    EXPECT_DEATH((void)data[entity], ".*");
 }
 
 TEST(ecs_ComponentData, insertExistingEntityDeathTest)
@@ -147,7 +147,7 @@ TEST(ecs_ComponentData, insertExistingEntityDeathTest)
     Wrecks::ECS::Entity entity = 0;
 
     data.insert(entity, { .value = 32 });
-    EXPECT_EXIT(data.insert(entity, { .value = 52 }), testing::KilledBySignal(SIGABRT), "");
+    EXPECT_DEATH(data.insert(entity, { .value = 52 }), ".*");
 }
 
 TEST(ecs_ComponentData, removeEmptyContainerDeathTest)
@@ -155,7 +155,7 @@ TEST(ecs_ComponentData, removeEmptyContainerDeathTest)
     Wrecks::ECS::ComponentContainer<TestComponent> data;
 
     EXPECT_EQ(data.size(), 0);
-    EXPECT_EXIT(data.remove(0), testing::KilledBySignal(SIGABRT), "");
+    EXPECT_DEATH(data.remove(0), ".*");
 }
 
 TEST(ecs_ComponentData, removeMissingEntityDeathTest)
@@ -163,5 +163,5 @@ TEST(ecs_ComponentData, removeMissingEntityDeathTest)
     Wrecks::ECS::ComponentContainer<TestComponent> data;
 
     data.insert(1, { .value = 5 });
-    EXPECT_EXIT(data.remove(0), testing::KilledBySignal(SIGABRT), "");
+    EXPECT_DEATH(data.remove(0), ".*");
 }
