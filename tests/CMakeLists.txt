@@ -45,6 +45,7 @@ add_executable(wrecks_tests ${TEST_SOURCES})
 target_link_libraries(wrecks_tests PRIVATE wrecks
                                    PRIVATE GTest::gtest_main)
 
+set_target_properties(wrecks_tests PROPERTIES MAP_IMPORTED_CONFIG_DEBUGTESTS Debug)
 target_compile_options(wrecks_tests PRIVATE --coverage)
 target_link_options(wrecks_tests PRIVATE --coverage)
 
