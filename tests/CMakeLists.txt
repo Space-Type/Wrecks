@@ -29,6 +29,7 @@ set(TEST_SOURCES
     networking/UDPSocket.cpp
     networking/UDPSocket.unix.cpp
     networking/UDPSocket.win.cpp
+    utils/FilteredIterator.cpp
     utils/IndexIterator.cpp)
 
 if (WIN32)
