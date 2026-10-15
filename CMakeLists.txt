@@ -13,6 +13,12 @@ project(Wrecks-Library VERSION 1.0
                        HOMEPAGE_URL "https://github.com/Space-Type/Wrecks"
                        LANGUAGES CXX)
 
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release;MinSizeRel;RelWithDebInfo;DebugTests"
+                              CACHE STRING "Supported build types" FORCE)
+
+set(CMAKE_CXX_FLAGS_DEBUGTESTS "${CMAKE_CXX_FLAGS_DEBUG}"
+                               CACHE STRING "Flags used by the C++ compiler during DebugTests builds.")
+
 set(CMAKE_CXX_STANDARD 23)
 
 set(WRECKS_SOURCES
@@ -56,10 +62,13 @@ if (WIN32)
     target_link_libraries(wrecks wsock32 ws2_32)
 endif()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(wrecks PRIVATE --coverage)
-    target_link_options(wrecks PRIVATE --coverage)
+if (CMAKE_BUILD_TYPE STREQUAL "DebugTests")
+    if (NOT WIN32)
+        target_compile_options(wrecks PRIVATE --coverage)
+        target_link_options(wrecks PRIVATE --coverage)
+    endif()
+
+    enable_testing()
+    add_subdirectory(tests)
 endif()
 
-enable_testing()
-add_subdirectory(tests)

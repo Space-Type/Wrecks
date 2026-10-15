@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        build_type: DebugTests
 
     runs-on: ${{ matrix.os }}
 
@@ -17,15 +18,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Configure (Linux)
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++-14 -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=g++-14 -S . -B build
         if: runner.os == 'Linux'
 
       - name: Configure (Windows)
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S . -B build
         if: runner.os == 'Windows'
 
       - name: Build
         run: cmake --build build --parallel
 
       - name: Test
-        run: ctest --test-dir build -C Debug --output-on-failure
+        run: ctest --test-dir build -C ${{ matrix.build_type }} --output-on-failure
