@@ -94,3 +94,15 @@ auto Wrecks::ECS::EntityContainer::getSignature(Entity entity) const noexcept ->
     assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
     return m_Signatures[entity];
 }
+
+/**
+ * Determines if the specified entity
+ * contains the given signature.
+ * This means the entity can have more
+ * components than the specified signature.
+ */
+bool Wrecks::ECS::EntityContainer::hasSignature(Entity entity, Signature signature) const noexcept
+{
+    assert(m_Signatures.size() > entity);  // GCOVR_EXCL_BR_LINE
+    return (m_Signatures[entity] & signature) == signature;
+}

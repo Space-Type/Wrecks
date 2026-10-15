@@ -26,6 +26,28 @@ TEST(ecs_EntityContainer, addSignature)
     EXPECT_EQ(entities.getSignature(entity), 0b1001);
 }
 
+TEST(ecs_EntityContainer, hasSignature)
+{
+    Wrecks::ECS::EntityContainer entities;
+    auto entity = entities.create();
+
+    entities.addSignature(entity, 2);
+    entities.addSignature(entity, 0);
+    ASSERT_EQ(entities.getSignature(entity), 0b101);
+    EXPECT_TRUE(entities.hasSignature(entity, 0b100));
+    EXPECT_TRUE(entities.hasSignature(entity, 0b001));
+    EXPECT_TRUE(entities.hasSignature(entity, 0b101));
+    EXPECT_FALSE(entities.hasSignature(entity, 0b011));
+
+    entities.removeSignature(entity, 2);
+    entities.addSignature(entity, 3);
+    ASSERT_EQ(entities.getSignature(entity), 0b1001);
+    EXPECT_TRUE(entities.hasSignature(entity, 0b0001));
+    EXPECT_TRUE(entities.hasSignature(entity, 0b1000));
+    EXPECT_TRUE(entities.hasSignature(entity, 0b1001));
+    EXPECT_FALSE(entities.hasSignature(entity, 0b1011));
+}
+
 TEST(ecs_EntityContainer, completeEntityCreation)
 {
     Wrecks::ECS::EntityContainer entities;

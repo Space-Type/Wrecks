@@ -42,7 +42,8 @@ namespace Wrecks::ECS {
             void removeSignature(Entity entity, unsigned int bitPosition) noexcept;
 
             void setSignature(Entity entity, Signature newSignature) noexcept;
-            Signature getSignature(Entity entity) const noexcept;
+            [[nodiscard]] Signature getSignature(Entity entity) const noexcept;
+            [[nodiscard]] bool hasSignature(Entity entity, Signature sig) const noexcept;
 
             inline iterator begin() noexcept { return iterator(m_Signatures.begin(), 0); }
             inline iterator end()   noexcept { return iterator(m_Signatures.end(), m_Signatures.size()); }
