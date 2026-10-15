@@ -16,11 +16,22 @@
 
 
 namespace Wrecks::ECS {
+    namespace impl {
+        // workaround for MSVC, since they have
+        // a parsing error on requires clauses
+        // which causes standard-compliant code to
+        // fail.
+        template <typename I, typename Component>
+        concept BaseComponentIterator =
+            std::is_same_v<I, typename std::vector<Component>::iterator> ||
+            std::is_same_v<I, typename std::vector<Component>::const_iterator>;
+    }
+
+
     template <Component T>
     class ComponentContainer {
         private:
-            template <typename I>
-                requires (std::is_same_v<I, typename std::vector<T>::iterator> || std::is_same_v<I, typename std::vector<T>::const_iterator>)
+            template <impl::BaseComponentIterator<T> I>
             class ComponentIterator;
 
         public:
@@ -119,8 +130,7 @@ namespace Wrecks::ECS {
             }
 
         private:
-            template <typename I>
-                requires (std::is_same_v<I, typename std::vector<ComponentType>::iterator> || std::is_same_v<I, typename std::vector<ComponentType>::const_iterator>)
+            template <impl::BaseComponentIterator<T> I>
             class ComponentIterator {
                 using BaseIterator = I;
 
