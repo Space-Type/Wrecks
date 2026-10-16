@@ -81,6 +81,22 @@ namespace Wrecks::ECS {
             void update()
             {
                 forEachSystem([&](auto& system){
+                    if constexpr (system.ATTRIBUTES.stage != SystemAttributes::STATE)
+                        return;
+
+                    system.setEngine(this);
+                    for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
+                        system(entity);
+                    }
+                });
+            }
+
+            void render()
+            {
+                forEachSystem([&](auto& system){
+                    if constexpr (system.ATTRIBUTES.stage != SystemAttributes::RENDER)
+                        return;
+
                     system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
                         system(entity);
