@@ -45,6 +45,7 @@ set(WRECKS_SOURCES
     src/utils/ContainsType.hpp
     src/utils/FilteredIterator.hpp
     src/utils/IndexIterator.hpp
+    src/utils/IndexOf.hpp
     src/utils/TupleIndex.hpp)
 
 if (WIN32)
