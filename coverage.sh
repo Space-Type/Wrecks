@@ -16,4 +16,4 @@ fi
 cmake -DCMAKE_BUILD_TYPE=DebugTests -S "$REPO_DIR" -B "$BUILD_DIR"
 cmake --build "$BUILD_DIR"
 ctest --test-dir "$BUILD_DIR"
-gcovr -r "$REPO_DIR" $METRIC --exclude "$TESTS_DIR" --exclude "$BUILD_DIR"
+gcovr -r "$REPO_DIR" $METRIC --exclude "$TESTS_DIR" --exclude "$BUILD_DIR" --exclude-throw-branches
