@@ -43,10 +43,10 @@ set(WRECKS_SOURCES
     src/networking/UDPSocket/UDPSocket.unix.cpp
     src/networking/UDPSocket/UDPSocket.win.cpp
     src/utils/ContainsType.hpp
+    src/utils/ElementIndex.hpp
     src/utils/FilteredIterator.hpp
     src/utils/IndexIterator.hpp
-    src/utils/IndexOf.hpp
-    src/utils/TupleIndex.hpp)
+    src/utils/IndexOf.hpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")

@@ -9,7 +9,7 @@
 #pragma once
 
 #include "../../src/utils/ContainsType.hpp"
+#include "../../src/utils/ElementIndex.hpp"
 #include "../../src/utils/FilteredIterator.hpp"
 #include "../../src/utils/IndexIterator.hpp"
 #include "../../src/utils/IndexOf.hpp"
-#include "../../src/utils/TupleIndex.hpp"

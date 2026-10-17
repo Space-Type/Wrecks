@@ -34,7 +34,7 @@ namespace Wrecks::ECS {
             constexpr const ComponentContainer<C>& get() const noexcept { return std::get<ComponentContainer<C>>(m_ComponentTypes); }
 
             template <Utils::ContainsType<T...> C>
-            static constexpr std::size_t index() noexcept { return Utils::tuple_index_v<ComponentContainer<C>, ComponentMap>; }
+            static constexpr std::size_t index() noexcept { return Utils::element_index_v<ComponentContainer<C>, ComponentMap>; }
 
             template <typename Fn>
             inline decltype(auto) forEach(Fn&& fnc) noexcept
