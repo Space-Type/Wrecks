@@ -13,8 +13,6 @@
 struct TestComponentA { int a; };
 struct TestComponentB {};
 
-struct TestSystem;
-
 struct TestSystem {
     bool wasInvoked = false;
 
@@ -27,7 +25,15 @@ struct TestSystem {
     }
 };
 
-using Systems = std::tuple<TestSystem>;
+struct TestStateSystem : TestSystem {
+    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::STATE };
+};
+
+struct TestRenderSystem : TestSystem {
+    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::RENDER };
+};
+
+using Systems = std::tuple<TestStateSystem, TestRenderSystem>;
 using Components = Wrecks::ECS::ComponentManager<TestComponentA, TestComponentB>;
 using Engine = Wrecks::ECS::Engine<Systems, Components>;
 
@@ -78,27 +84,46 @@ TEST(ecs_Engine, deleteEntity)
 TEST(ecs_Engine, systemUpdate)
 {
     Engine engine;
-    const auto& testSystem = engine.get<TestSystem>();
+    const auto& testStateSystem = engine.get<TestStateSystem>();
+    const auto& testRenderSystem = engine.get<TestRenderSystem>();
     auto entity = engine.createEntity();
 
     engine.addComponent(entity, TestComponentA{ .a = 1 });
     engine.addComponent(entity, TestComponentB{});
 
-    EXPECT_FALSE(testSystem.wasInvoked);
+    EXPECT_FALSE(testStateSystem.wasInvoked);
     engine.update();
-    EXPECT_TRUE(testSystem.wasInvoked);
+    EXPECT_TRUE(testStateSystem.wasInvoked);
+
+    EXPECT_FALSE(testRenderSystem.wasInvoked);
+    engine.render();
+    EXPECT_TRUE(testRenderSystem.wasInvoked);
+}
+
+TEST(ecs_Engine, systemUpdateNoSystems)
+{
+    Wrecks::ECS::Engine<std::tuple<>, Components> engine;
+    auto entity = engine.createEntity();
+
+    engine.addComponent(entity, TestComponentA{ .a = 1 });
+    engine.addComponent(entity, TestComponentB{});
+
+    EXPECT_NO_FATAL_FAILURE(
+        engine.update();
+        engine.render();
+    );
 }
 
 TEST(ecs_Engine, noSystemUpdate)
 {
     Engine engine;
-    const auto& testSystem = engine.get<TestSystem>();
+    const auto& testStateSystem = engine.get<TestStateSystem>();
     auto entity = engine.createEntity();
 
     engine.addComponent(entity, TestComponentB{});
     ASSERT_EQ(engine.entitySignature(entity), 0b10);
 
-    EXPECT_FALSE(testSystem.wasInvoked);
+    EXPECT_FALSE(testStateSystem.wasInvoked);
     engine.update();
-    EXPECT_FALSE(testSystem.wasInvoked);
+    EXPECT_FALSE(testStateSystem.wasInvoked);
 }

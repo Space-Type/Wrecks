@@ -15,11 +15,16 @@
 
 
 namespace Wrecks::ECS {
+    struct SystemAttributes {
+        enum { STATE, RENDER } stage;
+    };
+    
     template <typename T>
     concept System =
         std::is_nothrow_default_constructible_v<T> &&
         requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine)
         {
+            { T::ATTRIBUTES } -> std::same_as<const SystemAttributes&>;
             { cnstSystem.signature() } -> std::same_as<Signature>;
             { mutSystem.setEngine(engine) };
             { mutSystem(entity) };
