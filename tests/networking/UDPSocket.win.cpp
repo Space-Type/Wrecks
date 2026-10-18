@@ -55,13 +55,13 @@ TEST(networking_UDPSocket, SendStructData)
     TestData received;
 
     SOCKET receiver;
-    sockaddr_in receiverAddr;
+    Wrecks::Networking::Address receiverAddr;
     testingSocket("127.0.0.1", 12344, receiver, receiverAddr);
 
     ASSERT_TRUE(socket.send(sent, receiverAddr));
 
-    socklen_t addrLen = sizeof(sockaddr_in);
-    sockaddr_in addr = socket.address();
+    socklen_t addrLen = sizeof(Wrecks::Networking::Address);
+    Wrecks::Networking::Address addr = socket.address();
 
     int bytesRead = ::recvfrom(receiver, reinterpret_cast<char*>(&received), sizeof(received), 0, reinterpret_cast<sockaddr*>(&addr), &addrLen);
 
@@ -113,13 +113,13 @@ TEST(networking_UDPSocket, ReceiveStructData)
     TestData received;
 
     SOCKET sender;
-    sockaddr_in senderAddr;
+    Wrecks::Networking::Address senderAddr;
     testingSocket("127.0.0.1", 12339, sender, senderAddr);
 
     auto bytesSent = ::sendto(sender, reinterpret_cast<const char*>(&sent), sizeof(TestData), 0, reinterpret_cast<const sockaddr*>(&socket.address()), sizeof(sockaddr_in));
     ASSERT_EQ(bytesSent, sizeof(TestData));
 
-    sockaddr_in receivedSender;
+    Wrecks::Networking::Address receivedSender;
     auto bytesReceived = socket.receive(received, &receivedSender);
 
     EXPECT_EQ(bytesReceived, sizeof(TestData));
@@ -138,7 +138,7 @@ TEST(networking_UDPSocket, ReceiveStructDataNoSender)
     TestData received;
 
     SOCKET sender;
-    sockaddr_in senderAddr;
+    Wrecks::Networking::Address senderAddr;
     testingSocket("127.0.0.1", 12337, sender, senderAddr);
 
     auto bytesSent = ::sendto(sender, reinterpret_cast<const char*>(&sent), sizeof(TestData), 0, reinterpret_cast<const sockaddr*>(&socket.address()), sizeof(sockaddr_in));
