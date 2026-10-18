@@ -41,3 +41,8 @@ auto Wrecks::Networking::Address::port() const noexcept -> std::uint16_t
 {
     return ::ntohs(sin_port);
 }
+
+std::ostream& operator<<(std::ostream& output, const Wrecks::Networking::Address& addr)
+{
+    return output << addr.host() << ':' << addr.port();
+}
