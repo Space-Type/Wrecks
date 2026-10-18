@@ -9,9 +9,9 @@
 #include <gtest/gtest.h>
 #include <wrecks.hpp>
 
-using Wrecks::Networking::SequenceContainer;
+using Wrecks::Utils::SequenceContainer;
 
-TEST(networking_SequenceContainer, sequenceSize)
+TEST(utils_SequenceContainer, sequenceSize)
 {
     constexpr std::size_t size = 52;
 
@@ -22,7 +22,7 @@ TEST(networking_SequenceContainer, sequenceSize)
     EXPECT_EQ(sizedContainer.size(), size);
 }
 
-TEST(networking_SequenceContainer, mutableIterator)
+TEST(utils_SequenceContainer, mutableIterator)
 {
     constexpr int value = 42;
     SequenceContainer<int> container;
@@ -36,7 +36,7 @@ TEST(networking_SequenceContainer, mutableIterator)
     }
 }
 
-TEST(networking_SequenceContainer, constIterator)
+TEST(utils_SequenceContainer, constIterator)
 {
     constexpr int value = 42;
     SequenceContainer<int> containerStore;
@@ -66,7 +66,7 @@ class TestContainer : public SequenceContainer<int> {
         void replayTick(const int& value) { EXPECT_EQ(value, V); }
 };
 
-TEST(networking_SequenceContainer, tickReplay)
+TEST(utils_SequenceContainer, tickReplay)
 {
     constexpr int value = 42;
     TestContainer<value> container;
@@ -80,7 +80,7 @@ TEST(networking_SequenceContainer, tickReplay)
     container.replayFrom(8952);
 }
 
-TEST(networking_SequenceContainer, futureTickReplay)
+TEST(utils_SequenceContainer, futureTickReplay)
 {
     constexpr int value = 42;
     TestContainer<value> container;
@@ -94,7 +94,7 @@ TEST(networking_SequenceContainer, futureTickReplay)
     container.replayFrom(8957);
 }
 
-TEST(networking_SequenceContainer, tickReplayEdgeCase)
+TEST(utils_SequenceContainer, tickReplayEdgeCase)
 {
     constexpr int value = 42;
     TestContainer<value> container;

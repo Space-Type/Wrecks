@@ -32,39 +32,20 @@ set(WRECKS_SOURCES
     src/ecs/System.hpp
     src/errors/Error/Error.cpp
     src/errors/Error/Error.hpp
-    src/errors/NetworkError/NetworkError.cpp
-    src/errors/NetworkError/NetworkError.hpp
     src/events/EventManager/EventManager.cpp
     src/events/EventManager/EventManager.hpp
     src/events/BaseEventReceiver.hpp
     src/events/Event.hpp
     src/events/IEventReceiver.hpp
-    src/networking/Address/Address.hpp
-    src/networking/Address/Address.unix.cpp
-    src/networking/Address/Address.win.cpp
-    src/networking/UDPSocket/UDPSocket.hpp
-    src/networking/UDPSocket/UDPSocket.unix.cpp
-    src/networking/UDPSocket/UDPSocket.win.cpp
     src/utils/ContainsType.hpp
     src/utils/ElementIndex.hpp
     src/utils/FilteredIterator.hpp
     src/utils/IndexIterator.hpp
-    src/utils/IndexOf.hpp)
-
-if (WIN32)
-    set(EXCLUDED_PLATFORM "unix")
-else()
-    set(EXCLUDED_PLATFORM "win")
-endif()
-
-list(FILTER WRECKS_SOURCES EXCLUDE REGEX "\\.${EXCLUDED_PLATFORM}\\.[ch]pp$")
+    src/utils/IndexOf.hpp
+    src/utils/SequenceContainer.hpp)
 
 add_library(wrecks STATIC ${WRECKS_SOURCES})
 target_include_directories(wrecks PUBLIC include)
-
-if (WIN32)
-    target_link_libraries(wrecks wsock32 ws2_32)
-endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "DebugTests")
     if (NOT WIN32)
