@@ -9,20 +9,15 @@
 #pragma once
 
 #include "IndexOf.hpp"
-#include <variant>
-#include <tuple>
 
 
 namespace Wrecks::Utils {
-    template <typename T, typename TupleOrVariant>
+    template <typename T, typename Container>
     struct element_index;
 
-    template <typename T, typename ...Elements>
-    struct element_index<T, std::tuple<Elements...>> : index_of<T, Elements...> {};
+    template <typename T, template <typename...> typename ContainerType, typename ...Elements>
+    struct element_index<T, ContainerType<Elements...>> : index_of<T, Elements...> {};
 
-    template <typename T, typename ...Elements>
-    struct element_index<T, std::variant<Elements...>> : index_of<T, Elements...> {};
-
-    template <typename T, typename TupleOrVariant>
-    inline constexpr std::size_t element_index_v = element_index<T, TupleOrVariant>::value;
+    template <typename T, typename Container>
+    inline constexpr std::size_t element_index_v = element_index<T, Container>::value;
 }
