@@ -32,8 +32,6 @@ set(WRECKS_SOURCES
     src/ecs/System.hpp
     src/errors/Error/Error.cpp
     src/errors/Error/Error.hpp
-    src/errors/NetworkError/NetworkError.cpp
-    src/errors/NetworkError/NetworkError.hpp
     src/events/EventManager/EventManager.cpp
     src/events/EventManager/EventManager.hpp
     src/events/BaseEventReceiver.hpp
