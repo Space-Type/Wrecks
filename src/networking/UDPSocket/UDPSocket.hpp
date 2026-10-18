@@ -40,6 +40,13 @@ namespace Wrecks::Networking {
             void setNonBlocking(bool setting = true);
 
             /**
+             * Polls the socket to determine
+             * if the socket can be read from
+             * without blocking.
+             */
+            bool pollReceive(int timeout = -1) const;
+
+            /**
              * Sends data to the destination
              * address. Returns true if all data
              * was sent, and false if not.

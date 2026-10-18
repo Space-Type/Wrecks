@@ -10,6 +10,7 @@
 #include <wrecks/errors.hpp>
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -74,6 +75,13 @@ void Wrecks::Networking::UDPSocket::setNonBlocking(bool setting)
         ::fcntl(m_FD, F_SETFL, flags | O_NONBLOCK);
     else
         ::fcntl(m_FD, F_SETFL, flags & ~O_NONBLOCK);
+}
+
+bool Wrecks::Networking::UDPSocket::pollReceive(int timeout) const
+{
+    pollfd fd = { m_FD, POLLIN, 0 };
+    ::poll(&fd, 1, timeout);
+    return fd.revents & POLLIN;
 }
 
 void Wrecks::Networking::UDPSocket::swap(UDPSocket& other) noexcept
