@@ -169,12 +169,6 @@ TEST(networking_UDPSocket, ReceiveStructDataNoSender)
     ::close(senderFD);
 }
 
-TEST(networking_UDPSocket, pollReceive)
-{
-    Wrecks::Networking::UDPSocket socket(SOCKET_HOST, 12341);
-    EXPECT_FALSE(socket.pollReceive(0));
-}
-
 TEST(networking_UDPSocket, ReceiveError)
 {
     Wrecks::Networking::UDPSocket socket(SOCKET_HOST, 12341);

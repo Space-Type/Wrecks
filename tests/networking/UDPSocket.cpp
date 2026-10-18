@@ -69,3 +69,9 @@ TEST(networking_UDPSocket_common, SocketMove)
     EXPECT_SOCKADDR_EQ(mainSocket.address(), addr);
     EXPECT_SOCKADDR_EQ(newSocket.address(), empty);
 }
+
+TEST(networking_UDPSocket_common, PollReceiveFail)
+{
+    Wrecks::Networking::UDPSocket socket("127.0.0.1", 14341);
+    EXPECT_FALSE(socket.pollReceive(0));
+}
