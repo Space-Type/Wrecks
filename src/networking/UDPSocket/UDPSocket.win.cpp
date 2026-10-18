@@ -9,7 +9,6 @@
 #include "UDPSocket.hpp"
 #include <wrecks/errors.hpp>
 #include <winsock2.h>
-#include <ws2tcpip.h>
 
 
 Wrecks::Networking::UDPSocket::UDPSocket(cstring_view host, std::uint16_t port)
@@ -38,31 +37,13 @@ Wrecks::Networking::UDPSocket::~UDPSocket()
     close();
 }
 
-auto Wrecks::Networking::UDPSocket::host() const noexcept -> cstring_view
-{
-    constexpr std::size_t hostSize = 16;
-    static char hostname[hostSize];
-
-    std::fill_n(hostname, hostSize, '\0');
-    const char* res = ::inet_ntop(AF_INET, &m_Address.sin_addr, hostname, hostSize - 1);
-
-    return res
-        ? hostname
-        : "<unknown host>";
-}
-
-auto Wrecks::Networking::UDPSocket::port() const noexcept -> std::uint16_t
-{
-    return ::ntohs(m_Address.sin_port);
-}
-
 void Wrecks::Networking::UDPSocket::open(cstring_view host, std::uint16_t port)
 {
     m_Socket = ::socket(AF_INET, SOCK_DGRAM, 0);
     if (m_Socket == INVALID_SOCKET)
         throw NetworkError("failed to open socket");  // TODO: replace with ::fromErrno
 
-    m_Address = constructAddress(host, port);
+    m_Address = Address::construct(host, port);
 
     int status = ::bind(m_Socket, reinterpret_cast<const sockaddr*>(&m_Address), sizeof(m_Address));
     if (status != 0)
@@ -100,21 +81,9 @@ void Wrecks::Networking::UDPSocket::swap(UDPSocket& other) noexcept
     std::swap(m_Socket, other.m_Socket);
 }
 
-auto Wrecks::Networking::UDPSocket::constructAddress(cstring_view host, std::uint16_t port) -> sockaddr_in
+bool Wrecks::Networking::UDPSocket::sendBytes(const char* data, std::size_t length, const Address& dest) noexcept
 {
-    sockaddr_in addr = {};
-
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    if (!::inet_pton(AF_INET, host.data(), &addr.sin_addr))
-        throw NetworkError("invalid hostname");  // TODO: replace with ::fromErrno
-
-    return addr;
-}
-
-bool Wrecks::Networking::UDPSocket::sendBytes(const char* data, std::size_t length, const sockaddr_in& dest) noexcept
-{
-    int bytesSent = ::sendto(m_Socket, data, static_cast<int>(length), 0, reinterpret_cast<const sockaddr*>(&dest), sizeof(sockaddr_in));
+    int bytesSent = ::sendto(m_Socket, data, static_cast<int>(length), 0, reinterpret_cast<const sockaddr*>(&dest), sizeof(Address));
 
     if (bytesSent == SOCKET_ERROR)
         close();
@@ -122,9 +91,9 @@ bool Wrecks::Networking::UDPSocket::sendBytes(const char* data, std::size_t leng
     return bytesSent > 0 && static_cast<std::size_t>(bytesSent) == length;
 }
 
-size_t Wrecks::Networking::UDPSocket::receiveBytes(char* data, std::size_t size, sockaddr_in* dest) noexcept
+size_t Wrecks::Networking::UDPSocket::receiveBytes(char* data, std::size_t size, Address* dest) noexcept
 {
-    socklen_t addrLen = sizeof(sockaddr_in);
+    socklen_t addrLen = sizeof(Address);
     int bytesReceived = ::recvfrom(m_Socket, data, size, 0, reinterpret_cast<sockaddr*>(dest), dest ? &addrLen : nullptr);
 
     if (bytesReceived == SOCKET_ERROR)

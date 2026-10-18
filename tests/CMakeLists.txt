@@ -25,6 +25,7 @@ set(TEST_SOURCES
     errors/NetworkError.cpp
     events/BaseEventReceiver.cpp
     events/EventManager.cpp
+    networking/Address.cpp
     networking/SequenceContainer.cpp
     networking/UDPSocket.cpp
     networking/UDPSocket.unix.cpp

@@ -39,6 +39,9 @@ set(WRECKS_SOURCES
     src/events/BaseEventReceiver.hpp
     src/events/Event.hpp
     src/events/IEventReceiver.hpp
+    src/networking/Address/Address.hpp
+    src/networking/Address/Address.unix.cpp
+    src/networking/Address/Address.win.cpp
     src/networking/UDPSocket/UDPSocket.hpp
     src/networking/UDPSocket/UDPSocket.unix.cpp
     src/networking/UDPSocket/UDPSocket.win.cpp

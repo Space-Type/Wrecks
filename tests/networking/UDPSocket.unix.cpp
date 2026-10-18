@@ -72,7 +72,7 @@ TEST(networking_UDPSocket, SendStructData)
     TestData received;
 
     int receiverFD;
-    sockaddr_in receiverAddr;
+    Wrecks::Networking::Address receiverAddr;
     testingSocket("127.0.0.1", 12345, receiverFD, receiverAddr);
 
     ASSERT_TRUE(socket.send(sent, receiverAddr));
@@ -130,13 +130,13 @@ TEST(networking_UDPSocket, ReceiveStructData)
     TestData received;
 
     int senderFD;
-    sockaddr_in senderAddr;
+    Wrecks::Networking::Address senderAddr;
     testingSocket("127.0.0.1", 12342, senderFD, senderAddr);
 
     auto bytesSent = ::sendto(senderFD, &sent, sizeof(TestData), 0, reinterpret_cast<const sockaddr*>(&socket.address()), sizeof(sockaddr_in));
     ASSERT_EQ(bytesSent, sizeof(TestData));
 
-    sockaddr_in receivedSender;
+    Wrecks::Networking::Address receivedSender;
     auto bytesReceived = socket.receive(received, &receivedSender);
 
     EXPECT_EQ(bytesReceived, sizeof(TestData));

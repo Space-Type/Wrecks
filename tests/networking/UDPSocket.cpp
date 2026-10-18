@@ -24,8 +24,8 @@ TEST(networking_UDPSocket_common, ValidBind)
 
     ASSERT_NO_THROW(socket.open(VALID_HOST, VALID_PORT));
     EXPECT_TRUE(socket.isOpen());
-    EXPECT_EQ(socket.host(), VALID_HOST);
-    EXPECT_EQ(socket.port(), VALID_PORT);
+    EXPECT_EQ(socket.address().host(), VALID_HOST);
+    EXPECT_EQ(socket.address().port(), VALID_PORT);
 }
 
 TEST(networking_UDPSocket_common, CloseValidSocket)
