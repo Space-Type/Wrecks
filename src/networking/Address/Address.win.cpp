@@ -18,7 +18,7 @@ auto Wrecks::Networking::Address::construct(cstring_view host, std::uint16_t por
     addr.sin_family = AF_INET;
     addr.sin_port = ::htons(port);
 
-    if (!::inet_aton(host.data(), &addr.sin_addr))
+    if (!::inet_pton(AF_INET, host.data(), &addr.sin_addr))
         throw NetworkError("invalid hostname: \"" + std::string(host) + "\"");
 
     return addr;

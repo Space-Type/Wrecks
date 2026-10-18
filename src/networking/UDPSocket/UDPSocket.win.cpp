@@ -9,6 +9,7 @@
 #include "UDPSocket.hpp"
 #include <wrecks/errors.hpp>
 #include <winsock2.h>
+#include <ws2tcpip.h>
 
 
 Wrecks::Networking::UDPSocket::UDPSocket(cstring_view host, std::uint16_t port)
