@@ -76,6 +76,13 @@ void Wrecks::Networking::UDPSocket::setNonBlocking(bool setting)
         throw NetworkError("failed to change socket blocking mode");  // TODO: set ::fromErrno
 }
 
+bool Wrecks::Networking::UDPSocket::pollReceive(int timeout) const
+{
+    WSAPOLLFD pollfds = { m_Socket, POLLIN, 0 };
+    WSAPoll(&pollfds, 1, timeout);
+    return pollfds.revents & POLLIN;
+}
+
 void Wrecks::Networking::UDPSocket::swap(UDPSocket& other) noexcept
 {
     std::swap(m_Address, other.m_Address);
