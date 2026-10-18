@@ -37,6 +37,7 @@ set(WRECKS_SOURCES
     src/events/BaseEventReceiver.hpp
     src/events/Event.hpp
     src/events/IEventReceiver.hpp
+    src/utils/ConcatTypes.hpp
     src/utils/ContainsType.hpp
     src/utils/ElementIndex.hpp
     src/utils/FilteredIterator.hpp
