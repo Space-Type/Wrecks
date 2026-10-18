@@ -19,5 +19,5 @@ namespace Wrecks::Utils {
     };
 
     template <typename A, typename B>
-    using concat_types_t = concat_types<A, B>::type;
+    using concat_types_t = typename concat_types<A, B>::type;
 }
