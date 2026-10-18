@@ -26,12 +26,12 @@ set(TEST_SOURCES
     events/BaseEventReceiver.cpp
     events/EventManager.cpp
     networking/Address.cpp
-    networking/SequenceContainer.cpp
     networking/UDPSocket.cpp
     networking/UDPSocket.unix.cpp
     networking/UDPSocket.win.cpp
     utils/FilteredIterator.cpp
-    utils/IndexIterator.cpp)
+    utils/IndexIterator.cpp
+    utils/SequenceContainer.cpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")

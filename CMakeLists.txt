@@ -49,7 +49,8 @@ set(WRECKS_SOURCES
     src/utils/ElementIndex.hpp
     src/utils/FilteredIterator.hpp
     src/utils/IndexIterator.hpp
-    src/utils/IndexOf.hpp)
+    src/utils/IndexOf.hpp
+    src/utils/SequenceContainer.hpp)
 
 if (WIN32)
     set(EXCLUDED_PLATFORM "unix")

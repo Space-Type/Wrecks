@@ -13,7 +13,7 @@
 #include <array>
 
 
-namespace Wrecks::Networking {
+namespace Wrecks::Utils {
     /**
      * Sequence container class.
      *
