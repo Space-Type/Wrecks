@@ -22,24 +22,12 @@ set(TEST_SOURCES
     ecs/Engine.cpp
     ecs/EntityContainer.cpp
     errors/Error.cpp
-    errors/NetworkError.cpp
     events/BaseEventReceiver.cpp
     events/EventManager.cpp
-    networking/Address.cpp
-    networking/UDPSocket.cpp
-    networking/UDPSocket.unix.cpp
-    networking/UDPSocket.win.cpp
     utils/FilteredIterator.cpp
     utils/IndexIterator.cpp
     utils/SequenceContainer.cpp)
 
-if (WIN32)
-    set(EXCLUDED_PLATFORM "unix")
-else()
-    set(EXCLUDED_PLATFORM "win")
-endif()
-
-list(FILTER TEST_SOURCES EXCLUDE REGEX "\\.${EXCLUDED_PLATFORM}\\.[ch]pp$")
 
 add_executable(wrecks_tests ${TEST_SOURCES})
 

@@ -39,12 +39,6 @@ set(WRECKS_SOURCES
     src/events/BaseEventReceiver.hpp
     src/events/Event.hpp
     src/events/IEventReceiver.hpp
-    src/networking/Address/Address.hpp
-    src/networking/Address/Address.unix.cpp
-    src/networking/Address/Address.win.cpp
-    src/networking/UDPSocket/UDPSocket.hpp
-    src/networking/UDPSocket/UDPSocket.unix.cpp
-    src/networking/UDPSocket/UDPSocket.win.cpp
     src/utils/ContainsType.hpp
     src/utils/ElementIndex.hpp
     src/utils/FilteredIterator.hpp
@@ -52,20 +46,8 @@ set(WRECKS_SOURCES
     src/utils/IndexOf.hpp
     src/utils/SequenceContainer.hpp)
 
-if (WIN32)
-    set(EXCLUDED_PLATFORM "unix")
-else()
-    set(EXCLUDED_PLATFORM "win")
-endif()
-
-list(FILTER WRECKS_SOURCES EXCLUDE REGEX "\\.${EXCLUDED_PLATFORM}\\.[ch]pp$")
-
 add_library(wrecks STATIC ${WRECKS_SOURCES})
 target_include_directories(wrecks PUBLIC include)
-
-if (WIN32)
-    target_link_libraries(wrecks wsock32 ws2_32)
-endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "DebugTests")
     if (NOT WIN32)
