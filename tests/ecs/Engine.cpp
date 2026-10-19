@@ -10,16 +10,19 @@
 #include <wrecks.hpp>
 
 
+struct Engine;
+
 struct TestComponentA { int a; };
 struct TestComponentB {};
+
 
 struct TestSystem {
     bool wasInvoked = false;
 
     constexpr Wrecks::Signature signature() const noexcept { return 0b11; }
-    void setEngine(void*) const noexcept {}
 
-    void operator()(Wrecks::ECS::Entity entity)
+    template <typename T>
+    void operator()(T& engine, Wrecks::ECS::Entity entity)
     {
         wasInvoked = true;
     }
@@ -35,7 +38,9 @@ struct TestRenderSystem : TestSystem {
 
 using Systems = std::tuple<TestStateSystem, TestRenderSystem>;
 using Components = Wrecks::ECS::ComponentManager<TestComponentA, TestComponentB>;
-using Engine = Wrecks::ECS::Engine<Systems, Components>;
+struct Engine : Wrecks::ECS::Engine<Systems, Components> {
+    using Wrecks::ECS::Engine<Systems, Components>::Engine;
+};
 
 
 TEST(ecs_Engine, createEntity)
