@@ -14,7 +14,16 @@
 
 
 namespace Wrecks::ECS {
-    template <SystemTuple Systems, ComponentManagerType Components>
+    /**
+     * Note: Systems is assumed
+     * to be a tuple of types that
+     * satisfy the System concept.
+     *
+     * Due to the resulting cyclical
+     * concept use, enforcing this
+     * isn't possible.
+     */
+    template <typename Systems, ComponentManagerType Components>
     class Engine {
         Systems m_Systems;
         Components m_Components;
@@ -27,17 +36,17 @@ namespace Wrecks::ECS {
                 , m_Entities()
             {}
 
-            template <Utils::TupleContainsType<Systems> S>
+            template <Utils::ContainerContainsType<Systems> S>
             inline S& get() { return std::get<S>(m_Systems); }
 
-            template <Utils::TupleContainsType<Systems> S>
+            template <Utils::ContainerContainsType<Systems> S>
             inline const S& get() const { return std::get<S>(m_Systems); }
 
-            template <ECS::ManagedComponent<Components> C>
+            template <Utils::ContainerContainsType<Components> C>
             inline ComponentContainer<C>& get() { return m_Components.template get<C>(); }
 
-            template <ECS::ManagedComponent<Components> C>
-            inline const C& get() const { return m_Components.template get<C>(); }
+            template <Utils::ContainerContainsType<Components> C>
+            inline const ComponentContainer<C>& get() const { return m_Components.template get<C>(); }
 
             inline Signature entitySignature(Entity entity) const noexcept { return m_Entities.getSignature(entity); }
 
@@ -84,9 +93,8 @@ namespace Wrecks::ECS {
                     if constexpr (system.ATTRIBUTES.stage != SystemAttributes::STATE)
                         return;
 
-                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
-                        system(entity);
+                        system(*this, entity);
                     }
                 });
             }
@@ -97,9 +105,8 @@ namespace Wrecks::ECS {
                     if constexpr (system.ATTRIBUTES.stage != SystemAttributes::RENDER)
                         return;
 
-                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
-                        system(entity);
+                        system(*this, entity);
                     }
                 });
             }
