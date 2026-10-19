@@ -21,8 +21,9 @@ struct TestSystem {
 
     constexpr Wrecks::Signature signature() const noexcept { return 0b11; }
 
-    template <typename T>
-    void operator()(T& engine, Wrecks::ECS::Entity entity)
+    void setEngine(void*) noexcept {}
+
+    void operator()(Wrecks::ECS::Entity entity)
     {
         wasInvoked = true;
     }
