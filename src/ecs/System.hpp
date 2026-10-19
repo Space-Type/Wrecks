@@ -9,16 +9,12 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "ComponentManager.hpp"
 #include <wrecks/common.hpp>
 #include <type_traits>
 #include <tuple>
 
 
 namespace Wrecks::ECS {
-    template <typename Systems, ComponentManagerType Components>
-    class Engine;
-
     struct SystemAttributes {
         enum { STATE, RENDER } stage;
     };
@@ -26,10 +22,20 @@ namespace Wrecks::ECS {
     template <typename T>
     concept System =
         std::is_nothrow_default_constructible_v<T> &&
-        requires (T& mutSystem, const T& cnstSystem, Entity entity, Engine<std::tuple<>, ComponentManager<>> engine)
+        requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine)
         {
             { T::ATTRIBUTES } -> std::same_as<const SystemAttributes&>;
             { cnstSystem.signature() } -> std::same_as<Signature>;
-            { mutSystem.template operator()<decltype(engine)>(engine, entity) };
+            { mutSystem.setEngine(engine) };
+            { mutSystem(entity) };
         };
+
+    template <typename T>
+    struct is_system_tuple : std::false_type {};
+
+    template <System ...Element>
+    struct is_system_tuple<std::tuple<Element...>> : std::true_type {};
+
+    template <typename T>
+    concept SystemTuple = is_system_tuple<T>::value;
 }

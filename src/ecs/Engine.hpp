@@ -14,16 +14,7 @@
 
 
 namespace Wrecks::ECS {
-    /**
-     * Note: Systems is assumed
-     * to be a tuple of types that
-     * satisfy the System concept.
-     *
-     * Due to the resulting cyclical
-     * concept use, enforcing this
-     * isn't possible.
-     */
-    template <typename Systems, ComponentManagerType Components>
+    template <SystemTuple Systems, ComponentManagerType Components>
     class Engine {
         Systems m_Systems;
         Components m_Components;
@@ -93,8 +84,9 @@ namespace Wrecks::ECS {
                     if constexpr (system.ATTRIBUTES.stage != SystemAttributes::STATE)
                         return;
 
+                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
-                        system(*this, entity);
+                        system(entity);
                     }
                 });
             }
@@ -105,8 +97,9 @@ namespace Wrecks::ECS {
                     if constexpr (system.ATTRIBUTES.stage != SystemAttributes::RENDER)
                         return;
 
+                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
-                        system(*this, entity);
+                        system(entity);
                     }
                 });
             }
