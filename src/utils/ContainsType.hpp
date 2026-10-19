@@ -24,16 +24,15 @@ namespace Wrecks::Utils {
     template <typename T, typename ...Elements>
     concept ContainsType = contains_type_v<T, Elements...>;
 
+    template <typename T, typename Container>
+    struct container_contains_type;
 
-    template <typename T, typename Tuple>
-    struct tuple_contains_type;
+    template <typename T, template <typename...> typename Container, typename ...Elements>
+    struct container_contains_type<T, Container<Elements...>> : contains_type<T, Elements...> {};
 
-    template <typename T, typename ...Elements>
-    struct tuple_contains_type<T, std::tuple<Elements...>> : contains_type<T, Elements...> {};
+    template <typename T, typename Container>
+    inline constexpr bool container_contains_type_v = container_contains_type<T, Container>::value;
 
-    template <typename T, typename Tuple>
-    inline constexpr bool tuple_contains_type_v = tuple_contains_type<T, Tuple>::value;
-
-    template <typename T, typename Tuple>
-    concept TupleContainsType = tuple_contains_type_v<T, Tuple>;
+    template <typename T, typename Container>
+    concept ContainerContainsType = container_contains_type_v<T, Container>;
 }
