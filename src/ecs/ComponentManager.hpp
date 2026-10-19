@@ -64,16 +64,4 @@ namespace Wrecks::ECS {
 
     template <typename T>
     concept ComponentManagerType = is_component_manager_v<T>;
-
-    template <typename T, typename Manager>
-    struct is_managed_component : std::false_type {};
-
-    template <typename T, Component ...Elements>
-    struct is_managed_component<T, ComponentManager<Elements...>> : Utils::contains_type<T, Elements...> {};
-
-    template <typename T, typename Manager>
-    inline constexpr bool is_managed_component_v = is_managed_component<T, Manager>::value;
-
-    template <typename T, typename Manager>
-    concept ManagedComponent = is_managed_component_v<T, Manager>;
 }
