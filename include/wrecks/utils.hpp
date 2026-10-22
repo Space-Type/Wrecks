@@ -14,4 +14,5 @@
 #include "../../src/utils/FilteredIterator.hpp"
 #include "../../src/utils/IndexIterator.hpp"
 #include "../../src/utils/IndexOf.hpp"
+#include "../../src/utils/ReplaceContainerType.hpp"
 #include "../../src/utils/SequenceContainer.hpp"

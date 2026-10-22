@@ -43,6 +43,7 @@ set(WRECKS_SOURCES
     src/utils/FilteredIterator.hpp
     src/utils/IndexIterator.hpp
     src/utils/IndexOf.hpp
+    src/utils/ReplaceContainerType.hpp
     src/utils/SequenceContainer.hpp)
 
 add_library(wrecks STATIC ${WRECKS_SOURCES})
