@@ -41,6 +41,13 @@ namespace Wrecks::ECS {
     template <typename T>
     concept SystemTuple = is_system_tuple<T>::value;
 
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
+    //                 System Separation                 //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
     template <SystemTuple T>
     struct separate_systems;
 
@@ -69,4 +76,39 @@ namespace Wrecks::ECS {
 
     template <typename T>
     using render_systems_t = typename separate_systems<T>::render;
+
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
+    //                  System Ordering                  //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    template <SystemTuple T>
+    struct sort_systems;
+
+    template <System A, System B, System ...Rest>
+        requires (A::ATTRIBUTES.order <= B::Attributes.order)
+    struct sort_systems<std::tuple<A, B, Rest...>> {
+        using type = Utils::concat_types_t<std::tuple<A>, typename sort_systems<std::tuple<B, Rest...>>::type>;
+    };
+
+    template <System A, System B, System ...Rest>
+        requires (A::ATTRIBUTES.order > B::Attributes.order)
+    struct sort_systems<std::tuple<A, B, Rest...>> {
+        using type = Utils::concat_types_t<std::tuple<B>, typename sort_systems<std::tuple<A, Rest...>>::type>;
+    };
+
+    template <System T>
+    struct sort_systems<std::tuple<T>> {
+        using type = std::tuple<T>;
+    };
+
+    template <>
+    struct sort_systems<std::tuple<>> {
+        using type = std::tuple<>;
+    };
+
+    template <SystemTuple T>
+    using sort_systems_t = typename sort_systems<T>::type;
 }
