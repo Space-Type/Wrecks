@@ -20,7 +20,7 @@ namespace Wrecks::ECS {
         enum { STATE, RENDER } stage;
         unsigned int order;
     };
-    
+
     template <typename T>
     concept System =
         std::is_nothrow_default_constructible_v<T> &&
@@ -79,29 +79,46 @@ namespace Wrecks::ECS {
     ///////////////////////////////////////////////////////
 
     template <SystemTuple T>
-    struct sort_systems;
+    struct sort_systems_pass;
 
     template <System A, System B, System ...Rest>
         requires (A::ATTRIBUTES.order <= B::ATTRIBUTES.order)
-    struct sort_systems<std::tuple<A, B, Rest...>> {
-        using type = Utils::concat_types_t<std::tuple<A>, typename sort_systems<std::tuple<B, Rest...>>::type>;
+    struct sort_systems_pass<std::tuple<A, B, Rest...>> {
+        using rest_type = sort_systems_pass<std::tuple<B, Rest...>>;
+
+        static constexpr bool has_swapped = rest_type::has_swapped;
+        using type = Utils::concat_types_t<std::tuple<A>, typename rest_type::type>;
     };
 
     template <System A, System B, System ...Rest>
         requires (A::ATTRIBUTES.order > B::ATTRIBUTES.order)
-    struct sort_systems<std::tuple<A, B, Rest...>> {
-        using type = Utils::concat_types_t<std::tuple<B>, typename sort_systems<std::tuple<A, Rest...>>::type>;
+    struct sort_systems_pass<std::tuple<A, B, Rest...>> {
+        static constexpr bool has_swapped = true;
+        using type = Utils::concat_types_t<std::tuple<B>, typename sort_systems_pass<std::tuple<A, Rest...>>::type>;
     };
 
     template <System T>
-    struct sort_systems<std::tuple<T>> {
+    struct sort_systems_pass<std::tuple<T>> {
+        static constexpr bool has_swapped = false;
         using type = std::tuple<T>;
     };
 
     template <>
-    struct sort_systems<std::tuple<>> {
+    struct sort_systems_pass<std::tuple<>> {
+        static constexpr bool has_swapped = false;
         using type = std::tuple<>;
     };
+
+    template <SystemTuple T>
+    struct sort_systems;
+
+    template <SystemTuple T>
+        requires (!sort_systems_pass<T>::has_swapped)
+    struct sort_systems<T> : sort_systems_pass<T> {};
+
+    template <SystemTuple T>
+        requires (sort_systems_pass<T>::has_swapped)
+    struct sort_systems<T> : sort_systems<typename sort_systems_pass<T>::type> {};
 
     template <SystemTuple T>
     using sort_systems_t = typename sort_systems<T>::type;
