@@ -88,13 +88,13 @@ namespace Wrecks::ECS {
     struct sort_systems;
 
     template <System A, System B, System ...Rest>
-        requires (A::ATTRIBUTES.order <= B::Attributes.order)
+        requires (A::ATTRIBUTES.order <= B::ATTRIBUTES.order)
     struct sort_systems<std::tuple<A, B, Rest...>> {
         using type = Utils::concat_types_t<std::tuple<A>, typename sort_systems<std::tuple<B, Rest...>>::type>;
     };
 
     template <System A, System B, System ...Rest>
-        requires (A::ATTRIBUTES.order > B::Attributes.order)
+        requires (A::ATTRIBUTES.order > B::ATTRIBUTES.order)
     struct sort_systems<std::tuple<A, B, Rest...>> {
         using type = Utils::concat_types_t<std::tuple<B>, typename sort_systems<std::tuple<A, Rest...>>::type>;
     };
