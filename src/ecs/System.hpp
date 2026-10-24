@@ -71,12 +71,6 @@ namespace Wrecks::ECS {
         using render = std::tuple<>;
     };
 
-    template <typename T>
-    using state_systems_t = typename separate_systems<T>::state;
-
-    template <typename T>
-    using render_systems_t = typename separate_systems<T>::render;
-
 
     ///////////////////////////////////////////////////////
     //                                                   //

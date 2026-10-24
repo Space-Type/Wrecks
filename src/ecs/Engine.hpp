@@ -16,8 +16,9 @@
 namespace Wrecks::ECS {
     template <SystemTuple Systems, ComponentManagerType Components>
     class Engine {
-        using StateSystems  = sort_systems_t<state_systems_t<Systems>>;
-        using RenderSystems = sort_systems_t<render_systems_t<Systems>>;
+        using SplitSystems = separate_systems<Systems>;
+        using StateSystems  = sort_systems_t<typename SplitSystems::state>;
+        using RenderSystems = sort_systems_t<typename SplitSystems::render>;
 
         StateSystems m_StateSystems;
         RenderSystems m_RenderSystems;
