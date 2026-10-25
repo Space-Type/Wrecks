@@ -24,12 +24,12 @@ namespace Wrecks::ECS {
     template <typename T>
     concept System =
         std::is_nothrow_default_constructible_v<T> &&
-        requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine)
+        requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine, DeltaTime dt)
         {
             { T::ATTRIBUTES } -> std::same_as<const SystemAttributes&>;
             { cnstSystem.signature() } -> std::same_as<Signature>;
             { mutSystem.setEngine(engine) };
-            { mutSystem(entity) };
+            { mutSystem(entity, dt) };
         };
 
     template <typename T>
