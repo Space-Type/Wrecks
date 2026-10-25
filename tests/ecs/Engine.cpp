@@ -23,21 +23,25 @@ struct TestSystem {
 
     void setEngine(void*) noexcept {}
 
-    void operator()(Wrecks::ECS::Entity entity)
+    void operator()(Wrecks::ECS::Entity entity, Wrecks::DeltaTime)
     {
         wasInvoked = true;
     }
 };
 
-struct TestStateSystem : TestSystem {
-    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::STATE, .order = 0 };
+struct TestUpdateSystem : TestSystem {
+    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::UPDATE, .order = 0 };
+};
+
+struct TestFixedUpdateSystem : TestSystem {
+    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::FIXED_UPDATE, .order = 0 };
 };
 
 struct TestRenderSystem : TestSystem {
     static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::RENDER, .order = 0 };
 };
 
-using Systems = std::tuple<TestStateSystem, TestRenderSystem>;
+using Systems = std::tuple<TestUpdateSystem, TestFixedUpdateSystem, TestRenderSystem>;
 using Components = Wrecks::ECS::ComponentManager<TestComponentA, TestComponentB>;
 struct Engine : Wrecks::ECS::Engine<Systems, Components> {
     using Wrecks::ECS::Engine<Systems, Components>::Engine;
@@ -90,25 +94,33 @@ TEST(ecs_Engine, deleteEntity)
 TEST(ecs_Engine, systemUpdate)
 {
     Engine engine;
-    auto& testStateSystem = engine.get<TestStateSystem>();
+    auto& testUpdateSystem = engine.get<TestUpdateSystem>();
+    auto& testFixedUpdateSystem = engine.get<TestFixedUpdateSystem>();
     auto& testRenderSystem = engine.get<TestRenderSystem>();
     auto entity = engine.createEntity();
 
     engine.addComponent(entity, TestComponentA{ .a = 1 });
     engine.addComponent(entity, TestComponentB{});
 
-    EXPECT_FALSE(testStateSystem.wasInvoked);
-    engine.update();
-    EXPECT_TRUE(testStateSystem.wasInvoked);
-    testStateSystem.wasInvoked = false;
+    EXPECT_FALSE(testUpdateSystem.wasInvoked);
+    engine.update(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testUpdateSystem.wasInvoked);
+    testUpdateSystem.wasInvoked = false;
 
     EXPECT_FALSE(testRenderSystem.wasInvoked);
-    engine.render();
+    engine.render(Wrecks::DeltaTime(0));
     EXPECT_TRUE(testRenderSystem.wasInvoked);
+    testRenderSystem.wasInvoked = false;
 
-    EXPECT_FALSE(testStateSystem.wasInvoked);
-    engine.update();
-    EXPECT_TRUE(testStateSystem.wasInvoked);
+    EXPECT_FALSE(testUpdateSystem.wasInvoked);
+    engine.update(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testUpdateSystem.wasInvoked);
+    testUpdateSystem.wasInvoked = false;
+
+    EXPECT_FALSE(testFixedUpdateSystem.wasInvoked);
+    engine.fixedUpdate(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testFixedUpdateSystem.wasInvoked);
+    testFixedUpdateSystem.wasInvoked = false;
 }
 
 TEST(ecs_Engine, systemUpdateNoSystems)
@@ -120,21 +132,21 @@ TEST(ecs_Engine, systemUpdateNoSystems)
     engine.addComponent(entity, TestComponentB{});
 
     EXPECT_NO_FATAL_FAILURE(
-        engine.update();
-        engine.render();
+        engine.update(Wrecks::DeltaTime(0));
+        engine.render(Wrecks::DeltaTime(0));
     );
 }
 
 TEST(ecs_Engine, noSystemUpdate)
 {
     Engine engine;
-    const auto& testStateSystem = engine.get<TestStateSystem>();
+    const auto& testUpdateSystem = engine.get<TestUpdateSystem>();
     auto entity = engine.createEntity();
 
     engine.addComponent(entity, TestComponentB{});
     ASSERT_EQ(engine.entitySignature(entity), 0b10);
 
-    EXPECT_FALSE(testStateSystem.wasInvoked);
-    engine.update();
-    EXPECT_FALSE(testStateSystem.wasInvoked);
+    EXPECT_FALSE(testUpdateSystem.wasInvoked);
+    engine.update(Wrecks::DeltaTime(0));
+    EXPECT_FALSE(testUpdateSystem.wasInvoked);
 }
