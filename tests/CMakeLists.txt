@@ -21,6 +21,7 @@ set(TEST_SOURCES
     ecs/ComponentManager.cpp
     ecs/Engine.cpp
     ecs/EntityContainer.cpp
+    ecs/System.cpp
     errors/Error.cpp
     events/BaseEventReceiver.cpp
     events/EventManager.cpp

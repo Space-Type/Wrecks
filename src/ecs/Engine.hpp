@@ -16,22 +16,34 @@
 namespace Wrecks::ECS {
     template <SystemTuple Systems, ComponentManagerType Components>
     class Engine {
-        Systems m_Systems;
+        using SplitSystems = separate_systems<Systems>;
+        using StateSystems  = sort_systems_t<typename SplitSystems::state>;
+        using RenderSystems = sort_systems_t<typename SplitSystems::render>;
+
+        StateSystems m_StateSystems;
+        RenderSystems m_RenderSystems;
         Components m_Components;
         EntityContainer m_Entities;
 
         public:
             Engine() noexcept
-                : m_Systems()
+                : m_StateSystems()
+                , m_RenderSystems()
                 , m_Components()
                 , m_Entities()
             {}
 
-            template <Utils::ContainerContainsType<Systems> S>
-            inline S& get() { return std::get<S>(m_Systems); }
+            template <Utils::ContainerContainsType<StateSystems> S>
+            inline S& get() { return std::get<S>(m_StateSystems); }
 
-            template <Utils::ContainerContainsType<Systems> S>
-            inline const S& get() const { return std::get<S>(m_Systems); }
+            template <Utils::ContainerContainsType<StateSystems> S>
+            inline const S& get() const { return std::get<S>(m_StateSystems); }
+
+            template <Utils::ContainerContainsType<RenderSystems> S>
+            inline S& get() { return std::get<S>(m_RenderSystems); }
+
+            template <Utils::ContainerContainsType<RenderSystems> S>
+            inline const S& get() const { return std::get<S>(m_RenderSystems); }
 
             template <Utils::ContainerContainsType<Components> C>
             inline ComponentContainer<C>& get() { return m_Components.template get<C>(); }
@@ -80,10 +92,7 @@ namespace Wrecks::ECS {
 
             void update()
             {
-                forEachSystem([&](auto& system){
-                    if constexpr (system.ATTRIBUTES.stage != SystemAttributes::STATE)
-                        return;
-
+                forEachSystem(m_StateSystems, [&](auto& system){
                     system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
                         system(entity);
@@ -93,10 +102,7 @@ namespace Wrecks::ECS {
 
             void render()
             {
-                forEachSystem([&](auto& system){
-                    if constexpr (system.ATTRIBUTES.stage != SystemAttributes::RENDER)
-                        return;
-
+                forEachSystem(m_RenderSystems, [&](auto& system){
                     system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
                         system(entity);
@@ -105,12 +111,12 @@ namespace Wrecks::ECS {
             }
 
         private:
-            template <typename Fn>
-            void forEachSystem(Fn&& fnc)
+            template <SystemTuple Tuple, typename Fn>
+            static void forEachSystem(Tuple& systems, Fn&& fnc)
             {
                 std::apply([fnc = std::move(fnc)](auto& ...systemType){
                     (fnc(systemType), ...);
-                }, m_Systems);
+                }, systems);
             }
     };
 }
