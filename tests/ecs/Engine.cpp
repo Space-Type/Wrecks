@@ -30,11 +30,11 @@ struct TestSystem {
 };
 
 struct TestStateSystem : TestSystem {
-    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::STATE };
+    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::STATE, .order = 0 };
 };
 
 struct TestRenderSystem : TestSystem {
-    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::RENDER };
+    static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = Wrecks::ECS::SystemAttributes::RENDER, .order = 0 };
 };
 
 using Systems = std::tuple<TestStateSystem, TestRenderSystem>;
@@ -90,8 +90,8 @@ TEST(ecs_Engine, deleteEntity)
 TEST(ecs_Engine, systemUpdate)
 {
     Engine engine;
-    const auto& testStateSystem = engine.get<TestStateSystem>();
-    const auto& testRenderSystem = engine.get<TestRenderSystem>();
+    auto& testStateSystem = engine.get<TestStateSystem>();
+    auto& testRenderSystem = engine.get<TestRenderSystem>();
     auto entity = engine.createEntity();
 
     engine.addComponent(entity, TestComponentA{ .a = 1 });
@@ -100,10 +100,15 @@ TEST(ecs_Engine, systemUpdate)
     EXPECT_FALSE(testStateSystem.wasInvoked);
     engine.update();
     EXPECT_TRUE(testStateSystem.wasInvoked);
+    testStateSystem.wasInvoked = false;
 
     EXPECT_FALSE(testRenderSystem.wasInvoked);
     engine.render();
     EXPECT_TRUE(testRenderSystem.wasInvoked);
+
+    EXPECT_FALSE(testStateSystem.wasInvoked);
+    engine.update();
+    EXPECT_TRUE(testStateSystem.wasInvoked);
 }
 
 TEST(ecs_Engine, systemUpdateNoSystems)
