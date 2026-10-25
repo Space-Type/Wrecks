@@ -17,7 +17,7 @@
 
 namespace Wrecks::ECS {
     struct SystemAttributes {
-        enum { STATE, RENDER } stage;
+        enum { UPDATE, FIXED_UPDATE, RENDER } stage;
         unsigned int order;
     };
 
@@ -52,23 +52,34 @@ namespace Wrecks::ECS {
     struct separate_systems;
 
     template <System T, System ...U>
-        requires (T::ATTRIBUTES.stage == SystemAttributes::STATE)
+        requires (T::ATTRIBUTES.stage == SystemAttributes::UPDATE)
     struct separate_systems<std::tuple<T, U...>> {
-        using state  = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::state>;
+        using update = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::update>;
+        using fixed_update = typename separate_systems<std::tuple<U...>>::fixed_update;
+        using render = typename separate_systems<std::tuple<U...>>::render;
+    };
+
+    template <System T, System ...U>
+        requires (T::ATTRIBUTES.stage == SystemAttributes::FIXED_UPDATE)
+    struct separate_systems<std::tuple<T, U...>> {
+        using update = typename separate_systems<std::tuple<U...>>::update;
+        using fixed_update = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::fixed_update>;
         using render = typename separate_systems<std::tuple<U...>>::render;
     };
 
     template <System T, System ...U>
         requires (T::ATTRIBUTES.stage == SystemAttributes::RENDER)
     struct separate_systems<std::tuple<T, U...>> {
-        using state  = typename separate_systems<std::tuple<U...>>::state;
+        using update  = typename separate_systems<std::tuple<U...>>::update;
+        using fixed_update  = typename separate_systems<std::tuple<U...>>::fixed_update;
         using render = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::render>;
     };
 
     template <>
     struct separate_systems<std::tuple<>> {
-        using state  = std::tuple<>;
-        using render = std::tuple<>;
+        using update       = std::tuple<>;
+        using fixed_update = std::tuple<>;
+        using render       = std::tuple<>;
     };
 
 
