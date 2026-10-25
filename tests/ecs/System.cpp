@@ -14,12 +14,12 @@ using Wrecks::ECS::SystemAttributes;
 struct SystemTemplate {
     constexpr Wrecks::Signature signature() const noexcept { return 0b11; }
     void setEngine(void*) noexcept {}
-    void operator()(Wrecks::ECS::Entity entity) {}
+    void operator()(Wrecks::ECS::Entity entity, Wrecks::DeltaTime dt) {}
 };
 
-struct State0  : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::STATE,  .order = 0 }; };
-struct State1  : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::STATE,  .order = 1 }; };
-struct State2  : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::STATE,  .order = 2 }; };
+struct Update0 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::UPDATE, .order = 0 }; };
+struct Update1 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::UPDATE, .order = 1 }; };
+struct Update2 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::UPDATE, .order = 2 }; };
 struct Render0 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::RENDER, .order = 0 }; };
 struct Render1 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::RENDER, .order = 1 }; };
 struct Render2 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes ATTRIBUTES = { .stage = SystemAttributes::RENDER, .order = 2 }; };
@@ -27,11 +27,11 @@ struct Render2 : SystemTemplate { static constexpr Wrecks::ECS::SystemAttributes
 
 TEST(ecs_System, systemSeparation)
 {
-    using Systems = std::tuple<State0, Render0, State1, Render1>;
+    using Systems = std::tuple<Update0, Render0, Update1, Render1>;
     using SplitSystems = Wrecks::ECS::separate_systems<Systems>;
 
     // Note: EXPECT() functions don't support commas
-    constexpr bool stateTupleValid  = std::is_same_v<typename SplitSystems::state, std::tuple<State0, State1>>;
+    constexpr bool stateTupleValid  = std::is_same_v<typename SplitSystems::update, std::tuple<Update0, Update1>>;
     EXPECT_TRUE(stateTupleValid);
 
     constexpr bool renderTupleValid = std::is_same_v<typename SplitSystems::render, std::tuple<Render0, Render1>>;
@@ -40,11 +40,11 @@ TEST(ecs_System, systemSeparation)
 
 TEST(ecs_System, systemSeparationSingle)
 {
-    using Systems = std::tuple<State0>;
+    using Systems = std::tuple<Update0>;
     using SplitSystems = Wrecks::ECS::separate_systems<Systems>;
 
     // Note: EXPECT() functions don't support commas
-    constexpr bool stateTupleValid  = std::is_same_v<typename SplitSystems::state, std::tuple<State0>>;
+    constexpr bool stateTupleValid  = std::is_same_v<typename SplitSystems::update, std::tuple<Update0>>;
     EXPECT_TRUE(stateTupleValid);
 
     constexpr bool renderTupleValid = std::is_same_v<typename SplitSystems::render, std::tuple<>>;
@@ -57,7 +57,7 @@ TEST(ecs_System, emptySystemSeparation)
     using SplitSystems = Wrecks::ECS::separate_systems<Systems>;
 
     // Note: EXPECT() functions don't support commas
-    constexpr bool stateTupleValid  = std::is_same_v<typename SplitSystems::state, std::tuple<>>;
+    constexpr bool stateTupleValid  = std::is_same_v<typename SplitSystems::update, std::tuple<>>;
     EXPECT_TRUE(stateTupleValid);
 
     constexpr bool renderTupleValid = std::is_same_v<typename SplitSystems::render, std::tuple<>>;
@@ -66,8 +66,8 @@ TEST(ecs_System, emptySystemSeparation)
 
 TEST(ecs_System, sortTuple)
 {
-    using Systems         = std::tuple<Render2, State1, Render1, Render0, State2, State0>;
-    using ExpectedSystems = std::tuple<Render0, State0, State1, Render1, Render2, State2>;
+    using Systems         = std::tuple<Render2, Update1, Render1, Render0, Update2, Update0>;
+    using ExpectedSystems = std::tuple<Render0, Update0, Update1, Render1, Render2, Update2>;
     using SortedSystems   = Wrecks::ECS::sort_systems_t<Systems>;
 
     // Note: EXPECT() functions don't support commas
@@ -77,11 +77,11 @@ TEST(ecs_System, sortTuple)
 
 TEST(ecs_System, sortSinglePassTuple)
 {
-    using Systems = std::tuple<State1, State0, State2>;
+    using Systems = std::tuple<Update1, Update0, Update2>;
     using SortedSystems = Wrecks::ECS::sort_systems_t<Systems>;
 
     // Note: EXPECT() functions don't support commas
-    constexpr bool isSorted = std::is_same_v<SortedSystems, std::tuple<State0, State1, State2>>;
+    constexpr bool isSorted = std::is_same_v<SortedSystems, std::tuple<Update0, Update1, Update2>>;
     EXPECT_TRUE(isSorted);
 }
 

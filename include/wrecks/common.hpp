@@ -11,6 +11,7 @@
 #include <string_view>
 #include <cstdint>
 #include <bitset>
+#include <chrono>
 
 
 namespace Wrecks {
@@ -35,4 +36,5 @@ namespace Wrecks {
 
     using Signature = std::bitset<COMPONENTS_MAX>;
     using Tick = std::size_t;
+    using DeltaTime = std::chrono::duration<double, std::milli>;
 }

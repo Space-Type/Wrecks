@@ -17,19 +17,19 @@
 
 namespace Wrecks::ECS {
     struct SystemAttributes {
-        enum { STATE, RENDER } stage;
+        enum { UPDATE, FIXED_UPDATE, RENDER } stage;
         unsigned int order;
     };
 
     template <typename T>
     concept System =
         std::is_nothrow_default_constructible_v<T> &&
-        requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine)
+        requires (T& mutSystem, const T& cnstSystem, Entity entity, void* engine, DeltaTime dt)
         {
             { T::ATTRIBUTES } -> std::same_as<const SystemAttributes&>;
             { cnstSystem.signature() } -> std::same_as<Signature>;
             { mutSystem.setEngine(engine) };
-            { mutSystem(entity) };
+            { mutSystem(entity, dt) };
         };
 
     template <typename T>
@@ -52,23 +52,34 @@ namespace Wrecks::ECS {
     struct separate_systems;
 
     template <System T, System ...U>
-        requires (T::ATTRIBUTES.stage == SystemAttributes::STATE)
+        requires (T::ATTRIBUTES.stage == SystemAttributes::UPDATE)
     struct separate_systems<std::tuple<T, U...>> {
-        using state  = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::state>;
+        using update = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::update>;
+        using fixed_update = typename separate_systems<std::tuple<U...>>::fixed_update;
+        using render = typename separate_systems<std::tuple<U...>>::render;
+    };
+
+    template <System T, System ...U>
+        requires (T::ATTRIBUTES.stage == SystemAttributes::FIXED_UPDATE)
+    struct separate_systems<std::tuple<T, U...>> {
+        using update = typename separate_systems<std::tuple<U...>>::update;
+        using fixed_update = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::fixed_update>;
         using render = typename separate_systems<std::tuple<U...>>::render;
     };
 
     template <System T, System ...U>
         requires (T::ATTRIBUTES.stage == SystemAttributes::RENDER)
     struct separate_systems<std::tuple<T, U...>> {
-        using state  = typename separate_systems<std::tuple<U...>>::state;
+        using update  = typename separate_systems<std::tuple<U...>>::update;
+        using fixed_update  = typename separate_systems<std::tuple<U...>>::fixed_update;
         using render = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::render>;
     };
 
     template <>
     struct separate_systems<std::tuple<>> {
-        using state  = std::tuple<>;
-        using render = std::tuple<>;
+        using update       = std::tuple<>;
+        using fixed_update = std::tuple<>;
+        using render       = std::tuple<>;
     };
 
 
