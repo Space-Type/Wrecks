@@ -17,39 +17,27 @@ namespace Wrecks::ECS {
     template <SystemTuple Systems, ComponentManagerType Components>
     class Engine {
         using SplitSystems = separate_systems<Systems>;
-        using StateSystems  = sort_systems_t<typename SplitSystems::state>;
+
+        using UpdateSystems = sort_systems_t<typename SplitSystems::update>;
+        using FixedUpdateSystems = sort_systems_t<typename SplitSystems::fixed_update>;
         using RenderSystems = sort_systems_t<typename SplitSystems::render>;
 
-        StateSystems m_StateSystems;
+        UpdateSystems m_UpdateSystems;
+        FixedUpdateSystems m_FixedUpdateSystems;
         RenderSystems m_RenderSystems;
         Components m_Components;
         EntityContainer m_Entities;
 
         public:
             Engine() noexcept
-                : m_StateSystems()
+                : m_UpdateSystems()
+                , m_FixedUpdateSystems()
                 , m_RenderSystems()
                 , m_Components()
                 , m_Entities()
             {}
 
-            template <Utils::ContainerContainsType<StateSystems> S>
-            inline S& get() { return std::get<S>(m_StateSystems); }
-
-            template <Utils::ContainerContainsType<StateSystems> S>
-            inline const S& get() const { return std::get<S>(m_StateSystems); }
-
-            template <Utils::ContainerContainsType<RenderSystems> S>
-            inline S& get() { return std::get<S>(m_RenderSystems); }
-
-            template <Utils::ContainerContainsType<RenderSystems> S>
-            inline const S& get() const { return std::get<S>(m_RenderSystems); }
-
-            template <Utils::ContainerContainsType<Components> C>
-            inline ComponentContainer<C>& get() { return m_Components.template get<C>(); }
-
-            template <Utils::ContainerContainsType<Components> C>
-            inline const ComponentContainer<C>& get() const { return m_Components.template get<C>(); }
+            /* ----------------- Entities ----------------- */
 
             inline Signature entitySignature(Entity entity) const noexcept { return m_Entities.getSignature(entity); }
 
@@ -72,6 +60,8 @@ namespace Wrecks::ECS {
                 m_Entities.remove(entity);
             }
 
+            /* ---------------- Components ---------------- */
+
             template <Component C>
             void addComponent(Entity entity, C&& data)
             {
@@ -90,25 +80,63 @@ namespace Wrecks::ECS {
                 m_Entities.removeSignature(entity, m_Components.template index<C>());
             }
 
-            void update()
+            /* ------------- Update Functions ------------- */
+
+            void update(DeltaTime dt)
             {
-                forEachSystem(m_StateSystems, [&](auto& system){
+                forEachSystem(m_UpdateSystems, [&](auto& system){
                     system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
-                        system(entity);
+                        system(entity, dt);
                     }
                 });
             }
 
-            void render()
+            void fixedUpdate(DeltaTime dt)
+            {
+                forEachSystem(m_FixedUpdateSystems, [&](auto& system){
+                    system.setEngine(this);
+                    for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
+                        system(entity, dt);
+                    }
+                });
+            }
+
+            void render(DeltaTime dt)
             {
                 forEachSystem(m_RenderSystems, [&](auto& system){
                     system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
-                        system(entity);
+                        system(entity, dt);
                     }
                 });
             }
+
+            /* ------------------ Getters ----------------- */
+
+            template <Utils::ContainerContainsType<UpdateSystems> S>
+            inline S& get() { return std::get<S>(m_UpdateSystems); }
+
+            template <Utils::ContainerContainsType<UpdateSystems> S>
+            inline const S& get() const { return std::get<S>(m_UpdateSystems); }
+
+            template <Utils::ContainerContainsType<FixedUpdateSystems> S>
+            inline S& get() { return std::get<S>(m_FixedUpdateSystems); }
+
+            template <Utils::ContainerContainsType<FixedUpdateSystems> S>
+            inline const S& get() const { return std::get<S>(m_FixedUpdateSystems); }
+
+            template <Utils::ContainerContainsType<RenderSystems> S>
+            inline S& get() { return std::get<S>(m_RenderSystems); }
+
+            template <Utils::ContainerContainsType<RenderSystems> S>
+            inline const S& get() const { return std::get<S>(m_RenderSystems); }
+
+            template <Utils::ContainerContainsType<Components> C>
+            inline ComponentContainer<C>& get() { return m_Components.template get<C>(); }
+
+            template <Utils::ContainerContainsType<Components> C>
+            inline const ComponentContainer<C>& get() const { return m_Components.template get<C>(); }
 
         private:
             template <SystemTuple Tuple, typename Fn>
