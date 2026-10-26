@@ -53,9 +53,11 @@ TEST(ecs_Engine, createEntity)
     Engine engine;
     auto entity = engine.createEntity();
 
+    EXPECT_FALSE(engine.hasComponent<TestComponentA>(entity));
     engine.addComponent(entity, TestComponentA{ .a = 42 });
     engine.addComponent(entity, TestComponentB{});
     EXPECT_EQ(engine.entitySignature(entity), 0b11);
+    EXPECT_TRUE(engine.hasComponent<TestComponentA>(entity));
 
     const auto& component = engine.get<TestComponentA>();
     EXPECT_EQ(component.size(), 1);
