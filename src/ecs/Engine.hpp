@@ -48,8 +48,7 @@ namespace Wrecks::ECS {
                 m_Components.forEach([&, entity](auto& componentType){
                     using ComponentType = std::remove_cvref_t<decltype(componentType)>::ComponentType;
 
-                    Signature componentSig = Signature();
-                    componentSig.set(m_Components.template index<ComponentType>());
+                    auto componentSig = Signature().set(m_Components.template index<ComponentType>());
 
                     if (!m_Entities.hasSignature(entity, componentSig))
                         return;
@@ -78,6 +77,13 @@ namespace Wrecks::ECS {
                 ComponentContainer<C>& dataContainer = m_Components.template get<C>();
                 dataContainer.remove(entity);
                 m_Entities.removeSignature(entity, m_Components.template index<C>());
+            }
+
+            template <Component C>
+            bool hasComponent(Entity entity) const noexcept
+            {
+                auto signature = Signature().set(Components::template index<C>());
+                return m_Entities.hasSignature(entity, signature);
             }
 
             /* ------------- Update Functions ------------- */
