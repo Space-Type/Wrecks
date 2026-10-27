@@ -39,6 +39,8 @@ namespace Wrecks::ECS {
 
             /* ----------------- Entities ----------------- */
 
+            inline const EntityContainer& entities() const noexcept { return m_Entities; }
+
             inline Signature entitySignature(Entity entity) const noexcept { return m_Entities.getSignature(entity); }
 
             inline Entity createEntity() { return m_Entities.create(); }
