@@ -11,6 +11,7 @@ Options:
   -h, --help                  display this help message and exit
   -m, --metric line|branch|decision
                               choose the coverage metric
+  -o, --open-html             automatically opens the generate HTML coverage report (implies -d)
   --no-line-merge             disable line merging
 EOF
 }
@@ -23,12 +24,14 @@ COVRG_DIR="$REPO_DIR/test-coverage"
 
 # Options
 GCOVR_EXTRA_OPTS=""
-NO_LINE_MERGE=""
+HTML_DETAILS=""
+LINE_MERGE="--merge-lines"
+OPEN_DETAILS=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -d|--html-details)
-            GCOVR_EXTRA_OPTS="--html-details $COVRG_DIR/index.html $GCOVR_EXTRA_OPTS"
+            HTML_DETAILS="--html-details $COVRG_DIR/index.html"
             shift
             ;;
         -h|--help)
@@ -40,11 +43,16 @@ while [[ $# -gt 0 ]]; do
                 echo "$1 requires an extra argument"
                 exit 1
             fi
-            GCOVR_EXTRA_OPTS="--txt-metric $2 $GCOVR_EXTRA_OPTS"
+            GCOVR_EXTRA_OPTS="$GCOVR_EXTRA_OPTS --txt-metric $2"
             shift 2
             ;;
+        -o|--open-html)
+            HTML_DETAILS="--html-details $COVRG_DIR/index.html"
+            OPEN_DETAILS="xdg-open $COVRG_DIR/index.html"
+            shift
+            ;;
         --no-line-merge)
-            NO_LINE_MERGE="y"
+            LINE_MERGE=""
             shift
             ;;
         -*)
@@ -59,9 +67,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ -z "$NO_LINE_MERGE" ]; then
-    GCOVR_EXTRA_OPTS="--merge-lines $GCOVR_EXTRA_OPTS"
-fi
+GCOVR_EXTRA_OPTS=$(echo "$GCOVR_EXTRA_OPTS $LINE_MERGE $HTML_DETAILS" | xargs)
 
 if ! [ -d "$BUILD_DIR" ]; then
     mkdir "$BUILD_DIR"
@@ -75,3 +81,4 @@ cmake -DCMAKE_BUILD_TYPE=DebugTests -S "$REPO_DIR" -B "$BUILD_DIR"
 cmake --build "$BUILD_DIR"
 ctest --test-dir "$BUILD_DIR"
 gcovr -r "$REPO_DIR" --exclude "$TESTS_DIR" --exclude "$BUILD_DIR" --exclude-throw-branches $GCOVR_EXTRA_OPTS
+$OPEN_DETAILS &>/dev/null
