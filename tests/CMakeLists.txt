@@ -27,7 +27,8 @@ set(TEST_SOURCES
     events/EventManager.cpp
     utils/FilteredIterator.cpp
     utils/IndexIterator.cpp
-    utils/SequenceContainer.cpp)
+    utils/SequenceContainer.cpp
+    utils/VisitType.cpp)
 
 
 add_executable(wrecks_tests ${TEST_SOURCES})
