@@ -44,7 +44,8 @@ set(WRECKS_SOURCES
     src/utils/IndexIterator.hpp
     src/utils/IndexOf.hpp
     src/utils/ReplaceContainerType.hpp
-    src/utils/SequenceContainer.hpp)
+    src/utils/SequenceContainer.hpp
+    src/utils/VisitType.hpp)
 
 add_library(wrecks STATIC ${WRECKS_SOURCES})
 target_include_directories(wrecks PUBLIC include)

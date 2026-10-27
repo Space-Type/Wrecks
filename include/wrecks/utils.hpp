@@ -16,3 +16,4 @@
 #include "../../src/utils/IndexOf.hpp"
 #include "../../src/utils/ReplaceContainerType.hpp"
 #include "../../src/utils/SequenceContainer.hpp"
+#include "../../src/utils/VisitType.hpp"
