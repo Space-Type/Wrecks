@@ -9,6 +9,7 @@
 #pragma once
 
 #include "../../src/utils/ConcatTypes.hpp"
+#include "../../src/utils/ContainerElements.hpp"
 #include "../../src/utils/ContainsType.hpp"
 #include "../../src/utils/ElementIndex.hpp"
 #include "../../src/utils/FilteredIterator.hpp"
