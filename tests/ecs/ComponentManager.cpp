@@ -43,6 +43,15 @@ TEST(ecs_ComponentManager, getComponents)
     }
 }
 
+TEST(ecs_ComponentManager, mask)
+{
+    ComponentManager manager;
+
+    EXPECT_TRUE(manager.mask().test(manager.index<TestComponentA>()));
+    EXPECT_TRUE(manager.mask().test(manager.index<TestComponentB>()));
+    EXPECT_FALSE(manager.mask().test(3));
+}
+
 TEST(ecs_ComponentManager, getComponentIndex)
 {
     ComponentManager manager;

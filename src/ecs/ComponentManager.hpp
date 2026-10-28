@@ -34,7 +34,17 @@ namespace Wrecks::ECS {
             constexpr const ComponentContainer<C>& get() const noexcept { return std::get<ComponentContainer<C>>(m_ComponentTypes); }
 
             template <Utils::ContainsType<T...> C>
-            static constexpr std::size_t index() noexcept { return Utils::element_index_v<ComponentContainer<C>, ComponentMap>; }
+            static consteval std::size_t index() noexcept { return Utils::element_index_v<ComponentContainer<C>, ComponentMap>; }
+
+            static consteval Signature mask() noexcept
+            {
+                Signature mask;
+
+                for (std::size_t i = 0; i < Utils::container_elements_v<ComponentMap>; i++)
+                    mask.set(i);
+
+                return mask;
+            }
 
             template <typename Fn>
             inline decltype(auto) forEach(Fn&& fnc) noexcept
