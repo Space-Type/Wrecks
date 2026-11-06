@@ -18,9 +18,9 @@ namespace Wrecks::ECS {
     class Engine {
         using SplitSystems = separate_systems<Systems>;
 
-        using UpdateSystems = sort_systems_t<typename SplitSystems::update>;
+        using UpdateSystems      = sort_systems_t<typename SplitSystems::update>;
         using FixedUpdateSystems = sort_systems_t<typename SplitSystems::fixed_update>;
-        using RenderSystems = sort_systems_t<typename SplitSystems::render>;
+        using RenderSystems      = sort_systems_t<typename SplitSystems::render>;
 
         UpdateSystems m_UpdateSystems;
         FixedUpdateSystems m_FixedUpdateSystems;
