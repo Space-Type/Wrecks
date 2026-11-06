@@ -35,7 +35,16 @@ namespace Wrecks::ECS {
                 , m_RenderSystems()
                 , m_Components()
                 , m_Entities()
-            {}
+            {
+                updateSystemEngines();
+            }
+
+            Engine(const Engine& cpy) = delete;
+            Engine(Engine&& other) noexcept
+                : Engine()
+            {
+                swap(other);
+            }
 
             /* ----------------- Entities ----------------- */
 
@@ -146,7 +155,30 @@ namespace Wrecks::ECS {
             template <Utils::ContainerContainsType<Components> C>
             inline const ComponentContainer<C>& get() const { return m_Components.template get<C>(); }
 
+            /* --------------- Miscellaneous -------------- */
+
+            void swap(Engine& other)
+            {
+                std::swap(m_UpdateSystems, other.m_UpdateSystems);
+                std::swap(m_FixedUpdateSystems, other.m_FixedUpdateSystems);
+                std::swap(m_RenderSystems, other.m_RenderSystems);
+                std::swap(m_Components, other.m_Components);
+                std::swap(m_Entities, other.m_Entities);
+
+                updateSystemEngines();
+                other.updateSystemEngines();
+            }
+
+            inline Engine& operator=(Engine&& other) { swap(other); return *this; }
+
         private:
+            void updateSystemEngines()
+            {
+                forEachSystem(m_UpdateSystems,      [&](auto& system){ system.setEngine(this); });
+                forEachSystem(m_FixedUpdateSystems, [&](auto& system){ system.setEngine(this); });
+                forEachSystem(m_RenderSystems,      [&](auto& system){ system.setEngine(this); });
+            }
+
             template <SystemTuple Tuple, typename Fn>
             static void forEachSystem(Tuple& systems, Fn&& fnc)
             {
