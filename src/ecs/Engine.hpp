@@ -102,7 +102,6 @@ namespace Wrecks::ECS {
             void update(DeltaTime dt)
             {
                 forEachSystem(m_UpdateSystems, [&](auto& system){
-                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
                         system(entity, dt);
                     }
@@ -112,7 +111,6 @@ namespace Wrecks::ECS {
             void fixedUpdate(DeltaTime dt)
             {
                 forEachSystem(m_FixedUpdateSystems, [&](auto& system){
-                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
                         system(entity, dt);
                     }
@@ -122,7 +120,6 @@ namespace Wrecks::ECS {
             void render(DeltaTime dt)
             {
                 forEachSystem(m_RenderSystems, [&](auto& system){
-                    system.setEngine(this);
                     for (const auto [entity, signature] : m_Entities.filter(system.signature())) {
                         system(entity, dt);
                     }
