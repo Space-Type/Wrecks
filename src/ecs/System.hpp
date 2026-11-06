@@ -54,25 +54,25 @@ namespace Wrecks::ECS {
     template <System T, System ...U>
         requires (T::ATTRIBUTES.stage == SystemAttributes::UPDATE)
     struct separate_systems<std::tuple<T, U...>> {
-        using update = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::update>;
+        using update       = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::update>;
         using fixed_update = typename separate_systems<std::tuple<U...>>::fixed_update;
-        using render = typename separate_systems<std::tuple<U...>>::render;
+        using render       = typename separate_systems<std::tuple<U...>>::render;
     };
 
     template <System T, System ...U>
         requires (T::ATTRIBUTES.stage == SystemAttributes::FIXED_UPDATE)
     struct separate_systems<std::tuple<T, U...>> {
-        using update = typename separate_systems<std::tuple<U...>>::update;
+        using update       = typename separate_systems<std::tuple<U...>>::update;
         using fixed_update = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::fixed_update>;
-        using render = typename separate_systems<std::tuple<U...>>::render;
+        using render       = typename separate_systems<std::tuple<U...>>::render;
     };
 
     template <System T, System ...U>
         requires (T::ATTRIBUTES.stage == SystemAttributes::RENDER)
     struct separate_systems<std::tuple<T, U...>> {
-        using update  = typename separate_systems<std::tuple<U...>>::update;
+        using update        = typename separate_systems<std::tuple<U...>>::update;
         using fixed_update  = typename separate_systems<std::tuple<U...>>::fixed_update;
-        using render = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::render>;
+        using render        = Utils::concat_types_t<std::tuple<T>, typename separate_systems<std::tuple<U...>>::render>;
     };
 
     template <>
