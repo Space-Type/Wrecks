@@ -152,3 +152,38 @@ TEST(ecs_Engine, noSystemUpdate)
     engine.update(Wrecks::DeltaTime(0));
     EXPECT_FALSE(testUpdateSystem.wasInvoked);
 }
+
+TEST(ecs_Engine, engineMove)
+{
+    Engine oldEngine;
+    auto entity = oldEngine.createEntity();
+
+    Engine engine = std::move(oldEngine);
+
+    auto& testUpdateSystem = engine.get<TestUpdateSystem>();
+    auto& testFixedUpdateSystem = engine.get<TestFixedUpdateSystem>();
+    auto& testRenderSystem = engine.get<TestRenderSystem>();
+
+    engine.addComponent(entity, TestComponentA{ .a = 1 });
+    engine.addComponent(entity, TestComponentB{});
+
+    EXPECT_FALSE(testUpdateSystem.wasInvoked);
+    engine.update(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testUpdateSystem.wasInvoked);
+    testUpdateSystem.wasInvoked = false;
+
+    EXPECT_FALSE(testRenderSystem.wasInvoked);
+    engine.render(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testRenderSystem.wasInvoked);
+    testRenderSystem.wasInvoked = false;
+
+    EXPECT_FALSE(testUpdateSystem.wasInvoked);
+    engine.update(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testUpdateSystem.wasInvoked);
+    testUpdateSystem.wasInvoked = false;
+
+    EXPECT_FALSE(testFixedUpdateSystem.wasInvoked);
+    engine.fixedUpdate(Wrecks::DeltaTime(0));
+    EXPECT_TRUE(testFixedUpdateSystem.wasInvoked);
+    testFixedUpdateSystem.wasInvoked = false;
+}
